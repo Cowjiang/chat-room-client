@@ -1,26 +1,23 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <keep-alive>
+    <v-app>
+      <router-view></router-view>
+    </v-app>
+  </keep-alive>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts" setup>
+  import {onMounted} from "vue"
+  import {useStore} from "@/store"
+  import {clearUserInfo} from "@/common/utils"
+  const store = useStore()
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  onMounted(() => {
+      if (sessionStorage.getItem("token") && sessionStorage.getItem("userInfo")) {
+          store.userInfo = JSON.stringify(sessionStorage.getItem("userInfo"))
+      }
+      else {
+          clearUserInfo()
+      }
+  })
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
