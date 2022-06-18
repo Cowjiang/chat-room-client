@@ -258,7 +258,7 @@
         }
     })
 
-    const emit = defineEmits(['close']) //关闭登陆窗体事件
+    // const emit = defineEmits(['close']) //关闭登陆窗体事件
 
     const router = useRouter()
     const loginForm = ref({})
@@ -344,14 +344,15 @@
         } else {
             (loginForm.value as VForm).validate().then(async (res: any) => {
                 if (res.valid) {
+                    loginBtnLoading.value = true
                     const res = await loginApi({
                         username: loginFormValue.account,
                         password: loginFormValue.password,
                         cvCode: loginFormValue.captcha
                     })
-                    console.log(res)
+                    loginBtnLoading.value = false
                     if (res.success) {
-                        await router.replace({path: '/Main'})
+                        await router.replace({path: '/'})
                     } else {
                         if (res.code === 1007) {
                             loginFormValue.captcha = ''
@@ -455,7 +456,11 @@
         }, 1000)
     }
 
-    // 消息弹出窗的事件
+    /**
+     * 显示消息弹出窗
+     * @param text 消息内容
+     * @param type 消息类型，success/warning/error
+     */
     const alert = (text: string, type: string) => {
         alertInfo.show = true
         alertInfo.text = text

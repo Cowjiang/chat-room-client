@@ -8,6 +8,7 @@ import VueSocketIO from "vue-socket.io/dist/vue-socketio"
 // @ts-ignore
 import ClientSocketIO from 'socket.io-client'
 import router from './router/index'
+import 'animate.css'
 
 loadFonts()
 
