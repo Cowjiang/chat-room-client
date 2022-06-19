@@ -1,1 +1,10 @@
 $nav-width: 80px;
+$content-nav-width: 300px;
+$content-nav-bg-color: #edeef0;
+
+@mixin gradient-mask($height: 150px, $color: #ffffff, $degree: 0) {
+  width: 100%;
+  height: $height;
+  background-image: linear-gradient($degree, $color, rgba(255, 255, 255, 0));
+  pointer-events: none;
+}

@@ -1,26 +1,99 @@
 <template>
-  <div class="main-container d-flex flex-row">
-    <div class="nav-wrapper flex-shrink-0 flex-grow-0">
-      <navigation-bar/>
+  <div class="main-container w-100 h-screen d-flex flex-row">
+    <div class="nav-wrapper h-100 flex-shrink-0 flex-grow-0">
+      <navigation-bar @update="handleNavItemClick"/>
     </div>
-    <div class="content-wrapper flex-grow-1 pt-2 pr-2 pb-2">
-      <div class="content-container rounded-lg">
+    <div class="content-wrapper h-100 flex-grow-1 pt-2 pr-2 pb-2">
+      <div class="content-container w-100 h-100 rounded-lg bg-white overflow-hidden">
+        <home-frame v-if="currentNavItemIndex === 0"/>
       </div>
     </div>
+    <loading v-model="loadingStatus"/>
   </div>
 </template>
 
 <script lang="ts" setup>
-    import {onMounted} from 'vue'
+    import {onMounted, ref, watch} from 'vue'
     import {useStore} from "@/store"
     import {storeToRefs} from "pinia"
-    import NavigationBar from "@/components/navigationBar/src/navigationBar.vue";
+    import {useRoute, useRouter} from 'vue-router'
+    import NavigationBar from "@/components/navigation-bar/src/navigation-bar.vue"
+    import HomeFrame from "@/components/home-frame"
+    import Loading from "@/components/loading"
+    import {getChatListApi} from "@/service/api/chats";
+    import {AxiosError, AxiosResponse} from "axios";
 
     const store = useStore()
-    const {backgroundColor} = storeToRefs(store)
+    const {backgroundColor, navItemList, currentNavItemIndex, chatList} = storeToRefs(store)
+    const router = useRouter()
+    const route = useRoute()
+
+    const loadingStatus = ref(true)
+
+    interface NavItemClickEvent {
+        index: number,
+        detail: any
+    }
+
+    // 导航栏点击事件
+    const handleNavItemClick = (e: NavItemClickEvent) => {
+        store.currentNavItemIndex = e.index
+        const navItem = e.detail.name ?? 'home'
+        router.replace({name: 'index', params: {navItem}})
+    }
+
+    // 获取聊天列表
+    const getChatList = async () => {
+        await getChatListApi().then((res: AxiosResponse) => {
+            store.setChatList([
+                {
+                    id: '61be0f1ee7fd6865cbcd74d0',
+                    photo: 'face/face13.jpg',
+                    nickname: '保利尼奥3150',
+                    friendBeiZu: null,
+                    lastMessage: '4234',
+                    time: '2021-12-20T10:07:44.202+00:00'
+                },
+                {
+                    id: '61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7',
+                    photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
+                    nickname: '保利尼奥保利尼奥保利尼奥3151',
+                    friendBeiZu: 'Cowjiang的小号',
+                    lastMessage: '保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥',
+                    time: '2021-12-20T10:21:45.430+00:00'
+                }
+            ])
+        }).catch((err: AxiosError) => {
+            console.error(err)
+        })
+    }
+
+    Promise.all([getChatList()]).then(() => {
+        loadingStatus.value = false
+    })
+
+    watch(
+        () => route.params.navItem,
+        async navItem => {
+            const index = navItemList.value.findIndex(item => item.name == navItem)
+            store.currentNavItemIndex = index === -1 ? 0 : index
+        }
+    )
 
     onMounted(() => {
-
+        store.navItemList = [
+            {name: 'home', title: '主页', icon: 'fas fa-house'},
+            {name: 'group', title: '我的群聊', icon: 'fas fa-user-friends'},
+            {
+                name: '61be0f1ee7fd6865cbcd74d1',
+                chatType: 0,
+                title: 'Cowjiang',
+                imgUrl: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg'
+            },
+            {name: '61be0f1ee7fd6865cbcd74d2', chatType: 1, title: 'Cowjiang的群聊'},
+            {name: 'search', title: '搜索', icon: 'fas fa-search'},
+            {name: 'setting', title: '设置中心', icon: 'fas fa-cog'}
+        ]
     })
 </script>
 
@@ -28,23 +101,16 @@
   $background-color: v-bind(backgroundColor); //个性化背景颜色
 
   .main-container {
-    width: 100vw;
-    height: 100vh;
-
     .nav-wrapper {
       width: $nav-width;
-      height: inherit;
       background-color: $background-color;
     }
 
     .content-wrapper {
-      height: inherit;
       background-color: $background-color;
 
       .content-container {
-        width: 100%;
-        height: 100%;
-        background-color: #fff;
+
       }
     }
   }

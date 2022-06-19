@@ -1,24 +1,15 @@
-// import http from '@/service/http'
-// import {LoginParams} from './types'
-//
-// //登录
-// export const loginApi: Function = (params: LoginParams) => http.post('/user/login', params);
-//
-// //注册
-// export const register = (mobile, password, code) => http.post('/user/register', {
-//     mobile,
-//     password,
-//     code
-// });
-//
-// //获取好友列表
-// export const getMyFriendList = () => http.get(`/goodFriend/getMyFriendsList`);
+import http from '@/service/http'
+import {LoginParams, RegisterParams} from './types'
+
+//登录
+export const loginApi: Function = (params: LoginParams) => http.post('/user/login', params)
+
+//注册
+export const registerApi: Function = (params: RegisterParams) => http.post('/user/register', params)
+
 //
 // //获取群聊列表
 // export const getMyGroupList = () => http.get(`/group/finAll`);
-//
-// //获取消息列表
-// export const getMyChatList = () => http.get('/message/messageListItem');
 //
 // //修改好友的备注名
 // export const updateFriendNickname = (userId, friendId, friendBeiZhuName) => http.post('/user/updateFriendBeiZhu', {

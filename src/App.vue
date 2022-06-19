@@ -1,6 +1,6 @@
 <template>
   <keep-alive>
-    <v-app>
+    <v-app class="app">
       <router-view></router-view>
     </v-app>
   </keep-alive>
@@ -22,14 +22,14 @@
     })
 </script>
 
-<style>
+<style lang="scss">
   @import "~@/common/style/fontawesome.css";
 
   ::-webkit-scrollbar {
-    width: 0 !important;
+    width: 0;
   }
   ::-webkit-scrollbar {
-    width: 0 !important;
+    width: 0;
     height: 0;
   }
 </style>

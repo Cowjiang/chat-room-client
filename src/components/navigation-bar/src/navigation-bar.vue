@@ -2,15 +2,15 @@
   <div class="nav-container pt-5 d-flex flex-column align-center">
     <div
       class="btn-container d-flex flex-column justify-center align-center mb-1"
-      v-for="(btn, index) in navigationList"
+      v-for="(btn, index) in navItemList"
       :key="index">
       <div class="btn-wrapper d-flex justify-center align-center">
         <v-hover v-slot="{ isHovering, props }">
           <div
             class="btn-content d-flex justify-center align-center flex-grow-0 flex-shrink-0"
             :class="[
-              index === currentTab ? 'btn-content__focus' : '',
-              isHovering && index !== currentTab ? 'btn-content__hover' : ''
+              index === currentNavItemIndex ? 'btn-content__focus' : '',
+              isHovering && index !== currentNavItemIndex ? 'btn-content__hover' : ''
             ]"
             @click="handleNavItemClick(index)"
             v-bind="props"
@@ -43,7 +43,7 @@
           </div>
         </v-hover>
         <svg
-          :class="index === currentTab ? '' : 'text-transparent'"
+          :class="index === currentNavItemIndex ? '' : 'text-transparent'"
           width="30px"
           height="60px"
           viewBox="0 0 36 60"
@@ -70,39 +70,21 @@
 </template>
 
 <script lang="ts" setup>
-    import {defineEmits, ref} from 'vue'
+    import {defineEmits} from 'vue'
     import {useStore} from "@/store"
     import {storeToRefs} from "pinia"
 
     const store = useStore()
-    const {primaryColor} = storeToRefs(store)
-    const {backgroundColor} = storeToRefs(store)
+    const {primaryColor, backgroundColor, navItemList, currentNavItemIndex} = storeToRefs(store)
     const emit = defineEmits(['update']) //导航栏点击事件
-    const currentTab = ref(1)
-    const navigationList = [
-        {title: '主页', icon: 'fas fa-house'},
-        {title: '我的好友', icon: 'fas fa-user-friends'},
-        {
-            title: 'Cowjiang',
-            icon: '',
-            imgUrl: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg'
-        },
-        {
-            title: 'Cowjiang的群聊',
-            icon: '',
-            imgUrl: ''
-        },
-        {title: '搜索', icon: 'fas fa-search'},
-        {title: '设置中心', icon: 'fas fa-cog'}
-    ]
 
     /**
      * 导航栏点击事件
      * @param index 点击的按钮序号
      */
     const handleNavItemClick = (index: number) => {
-        currentTab.value = index
-        emit('update', navigationList[index])
+        store.currentNavItemIndex = index
+        emit('update', {index: index, detail: navItemList.value[index]})
     }
 </script>
 

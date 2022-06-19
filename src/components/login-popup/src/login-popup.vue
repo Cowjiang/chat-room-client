@@ -238,7 +238,7 @@
 <script lang="ts" setup>
     import {computed, defineProps, defineEmits, onMounted, reactive, ref} from "vue"
     import {useRouter} from 'vue-router'
-    import {loginApi, registerApi} from "@/service/api/login"
+    import {loginApi, registerApi} from "@/service/api/user"
     import axios from "axios"
 
     interface VForm {
@@ -479,5 +479,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "loginPopup";
+  @import "login-popup";
 </style>

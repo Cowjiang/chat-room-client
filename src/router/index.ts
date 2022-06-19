@@ -6,7 +6,11 @@ import {clearUserInfo} from "@/common/utils"
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        component: index,
+        redirect: '/index/home'
+    },
+    {
+        path: '/index',
+        redirect: '/index/home'
     },
     {
         path: '/login',
@@ -14,7 +18,7 @@ const routes: RouteRecordRaw[] = [
         component: login,
     },
     {
-        path: '/index',
+        path: '/index/:navItem',
         name: 'index',
         component: index,
     },
