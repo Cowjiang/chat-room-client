@@ -2,10 +2,10 @@ import http from '@/service/http'
 import {LoginParams, RegisterParams} from './types'
 
 //登录
-export const loginApi: Function = (params: LoginParams) => http.post('/user/login', params)
+export const loginApi = (params: LoginParams) => http.post('/user/login', params)
 
 //注册
-export const registerApi: Function = (params: RegisterParams) => http.post('/user/register', params)
+export const registerApi = (params: RegisterParams) => http.post('/user/register', params)
 
 //
 // //获取群聊列表

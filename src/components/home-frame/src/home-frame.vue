@@ -12,7 +12,7 @@
         </v-btn>
         <v-divider class="mt-4" color="#e5e5ea"/>
       </div>
-      <div class="nav-list-container mt-6">
+      <div class="nav-list-container mt-3 pt-3">
         <v-hover v-slot="{ isHovering, props }">
           <div
             class="my-friends-btn d-flex align-center position-relative ml-2 pl-4 py-6 text-subtitle-1 text-grey-darken-3 font-weight-bold"
@@ -64,12 +64,14 @@
                   :src="chat.avatarUrl"
                   :alt="chat.nickname"/>
               </v-avatar>
-              <div class="mx-2 w-100 d-flex flex-column overflow-hidden text-no-wrap">
+              <div class="ml-2 mr-4 w-100 d-flex flex-column overflow-hidden text-no-wrap">
                 <div class="d-flex overflow-hidden">
-                  <span class="w-100 flex-grow-1 text-subtitle-2 text-grey-darken-3 font-weight-bold">{{
-                      chat.nickname
-                    }}</span>
-                  <span class="ml-auto flex-shrink-0 text-caption text-grey-lighten-1">{{ chat.time }}</span>
+                  <span class="w-100 mr-2 flex-grow-1 text-subtitle-2 text-grey-darken-3 font-weight-bold">
+                    {{ chat.nickname }}
+                  </span>
+                  <span class="ml-auto flex-shrink-0 text-caption text-grey-lighten-1">
+                    {{ chat.time }}
+                  </span>
                 </div>
                 <span class="text-sm-body-2 text-grey-darken-2">{{ chat.lastMessage }}</span>
               </div>
@@ -99,7 +101,9 @@
       <div class="bottom-mask"></div>
     </div>
     <div class="home-main-container h-100 flex-grow-1">
-
+      <chat-frame
+        v-if="currentNavItemIndex !== -1"
+        :chat-info="getChatList[currentNavItemIndex]"/>
     </div>
   </div>
 </template>
@@ -108,11 +112,12 @@
     import {onMounted, ref} from 'vue'
     import {useStore} from "@/store"
     import {storeToRefs} from "pinia"
+    import ChatFrame from "@/components/chat-frame";
 
     const store = useStore()
     const {primaryColor, getChatList} = storeToRefs(store)
 
-    const currentNavItemIndex = ref(0)
+    const currentNavItemIndex = ref(-1)
 
     /**
      * 左侧菜单点击事件
@@ -120,7 +125,6 @@
      */
     const handleNavItemClick = (index: number): void => {
         currentNavItemIndex.value = index
-        console.log(1)
     }
 
     onMounted(() => {

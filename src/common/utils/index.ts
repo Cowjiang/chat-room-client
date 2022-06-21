@@ -12,7 +12,7 @@ export const clearUserInfo = (): void => {
  * 格式化时间
  * @param time 时间字符串
  * @param detail 是否返回更详细的结果，默认为true
- * @returns 格式化后的时间
+ * @returns {string} 格式化后的时间
  */
 export const formatTime = (time: string, detail: boolean = true): string => {
     if (!time) {
@@ -43,3 +43,21 @@ export const formatTime = (time: string, detail: boolean = true): string => {
         return detail ? `${messageTime.year}年${messageTime.month}月${messageTime.day}日 ${messageTime.hour}:${messageTime.min}` : `${messageTime.year}/${messageTime.month}/${messageTime.day}`
     }
 }
+
+// @ts-ignore
+export const computeDatetime = (oldTime: string, newTime: string): boolean => (new Date(newTime) - new Date(oldTime)) / 1000 / 60 >= 5 //返回两个时间差是否大于5分钟
+
+/**
+ * 对象数组去重
+ * @param arr 要去重的目标数组
+ * @returns {Array<any>} 去重后的数组
+ */
+export const removeDuplicateObj = (arr: Array<any>) => {
+    const obj = {};
+    arr = arr.reduce((newArr, next) => {
+        // @ts-ignore
+        obj[next.id] ? "" : (obj[next.id] = newArr.push(next));
+        return newArr;
+    }, []);
+    return arr;
+};

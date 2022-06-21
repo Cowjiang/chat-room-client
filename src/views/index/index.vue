@@ -8,7 +8,7 @@
         <home-frame v-if="currentNavItemIndex === 0"/>
       </div>
     </div>
-    <loading v-model="loadingStatus"/>
+    <loading v-model="loadingStatus" enterDuration="0s"/>
   </div>
 </template>
 

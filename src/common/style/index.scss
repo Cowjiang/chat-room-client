@@ -8,3 +8,23 @@ $content-nav-bg-color: #edeef0;
   background-image: linear-gradient($degree, $color, rgba(255, 255, 255, 0));
   pointer-events: none;
 }
+
+@mixin scrollbar-default {
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 5px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    border-radius: 5px;
+    background: #ccc;
+    transition: color .2s ease;
+  }
+}

@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import {formatTime} from "@/common/utils";
+import {NavItemList, ChatInfo, ChatMessageHistory} from "@/store/types";
 
 export const useStore = defineStore({
     id: 'store',
@@ -9,11 +10,12 @@ export const useStore = defineStore({
         primaryColor: '#66c', //个性化主题颜色
         navItemList: [] as NavItemList[], //导航栏项目列表
         currentNavItemIndex: 0, //当前导航栏显示的项目的序号
-        chatList: [] as ChatList[], //消息列表
+        chatList: [] as ChatInfo[], //消息列表
+        chatMessageHistory: new Map() as Map<string, ChatMessageHistory>, //聊天消息记录缓存
     }),
     getters: {
         //获取用户信息
-        getUserInfo: state => JSON.parse(state.userInfo),
+        getUserInfo: state => JSON.parse(JSON.parse(state.userInfo)),
         //获取我的聊天列表
         getChatList: state => state.chatList.map(chat => {
             chat.time = formatTime(chat.time, false)
@@ -34,6 +36,25 @@ export const useStore = defineStore({
                 lastMessage: chat.lastMessage,
                 time: chat.time
             }))
+        },
+        //根据roomId获取聊天消息记录
+        getChatMessageHistory(roomId: string): ChatMessageHistory | null {
+            const messageHistory = this.chatMessageHistory.get(roomId)
+            return messageHistory ?? null
+        },
+        /**
+         * 存储聊天消息历史记录
+         * @param roomId 聊天室id
+         * @param messageHistory 消息历史记录
+         * @param pageNumber 分页页码
+         */
+        setChatMessageHistory(roomId: string, messageHistory: Array<any>, pageNumber: number) {
+            const chatMessageHistory: ChatMessageHistory = {
+                updateTime: new Date(),
+                messageList: messageHistory,
+                pageNumber: pageNumber
+            }
+            this.chatMessageHistory.set(roomId, chatMessageHistory)
         }
     }
 })

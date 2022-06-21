@@ -30,7 +30,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-    if (to.path === '/index' || to.path === '/' ) {
+    if (to.path !== '/login') {
         if (!sessionStorage.getItem("token")) {
             clearUserInfo()
             return {name: 'login'}
