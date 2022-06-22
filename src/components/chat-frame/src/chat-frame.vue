@@ -116,6 +116,11 @@
             @keydown.enter="handleSendMessage"/>
         </div>
         <div class="append-btn-container ml-auto flex-shrink-0 text-h6 text-grey-darken-2">
+          <input
+            class="position-relative"
+            type="file"
+            accept="image/png,image/jpeg,image/jpg"
+            @change="handleFileSelected($event.target.files)">
           <i class="fa-regular fa-image"></i>
         </div>
       </div>
@@ -128,11 +133,12 @@
     import {defineProps, withDefaults, onMounted} from 'vue'
     import {useStore} from "@/store"
     import {storeToRefs} from "pinia"
+    import axios from "axios"
     import Loading from "@/components/loading"
     import {getSingleChatHistoryApi} from "@/service/api/chats"
     import {ChatInfo} from '@/store/types'
-    import {AxiosError, AxiosResponse} from "axios";
-    import {formatTime, computeDatetime, removeDuplicateObj} from "@/common/utils";
+    import {AxiosError, AxiosResponse} from "axios"
+    import {formatTime, computeDatetime, removeDuplicateObj} from "@/common/utils"
 
     const store = useStore()
     const {getUserInfo, primaryColor} = storeToRefs(store)
@@ -140,6 +146,8 @@
     interface Props {
         chatInfo: ChatInfo
     }
+
+    type FileType = 'image' | 'file' //文件上传类型
 
     const props = withDefaults(defineProps<Props>(), {})
     const chatMessageArea = ref<HTMLElement | null>(null)
@@ -245,6 +253,54 @@
                 }
             })
         }
+    }
+
+    // 文件选择事件
+    const handleFileSelected = (files: Array<File>) => {
+        const file = files[0];
+        let fileForm = new window.FormData();
+        fileForm.append('file', file);
+        fileForm.append('model', 'chat');
+        uploadFile(fileForm, 'image');
+    }
+
+    /**
+     * 文件上传事件
+     * @param file 文件表单
+     * @param type 文件类型
+     */
+    const uploadFile = (file: FormData, type: FileType) => {
+        const token: string = sessionStorage.getItem("token") ?? ''
+        axios.post('/api/system/upload', file, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': token
+            }
+        }).then(res => {
+            const fileUrl = res.data.data.file.filePath
+            if (type === 'image') {
+                const message = {
+                    roomId: props.chatInfo.id,
+                    message: fileUrl,
+                    senderId: getUserInfo.value.uid,
+                    senderName: getUserInfo.value.username,
+                    senderNickname: getUserInfo.value.nickname,
+                    createdTime: new Date(),
+                    messageType: "image",
+                    senderAvatar: getUserInfo.value.photo,
+                    isReadUser: [getUserInfo.value.uid],
+                    conversationType: "FRIEND"
+                }
+                chatMessageHistory.value.push(message)
+                setTimeout(() => {
+                    if (chatMessageArea.value) {
+                        chatMessageArea.value.scrollTop = 9999909
+                    }
+                }, 500)
+            }
+        }).catch(error => {
+            console.error(error);
+        })
     }
 
     // 重置聊天组件数据
@@ -567,6 +623,13 @@
 
       .input-container {
         .prepend-btn-container, .append-btn-container {
+          input {
+            width: 30px;
+            left: 50%;
+            opacity: 0;
+            cursor: pointer;
+          }
+
           i {
             cursor: pointer;
           }

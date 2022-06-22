@@ -15,7 +15,7 @@ export const useStore = defineStore({
     }),
     getters: {
         //获取用户信息
-        getUserInfo: state => JSON.parse(JSON.parse(state.userInfo)),
+        getUserInfo: state => (JSON.parse(state.userInfo)),
         //获取我的聊天列表
         getChatList: state => state.chatList.map(chat => {
             chat.time = formatTime(chat.time, false)

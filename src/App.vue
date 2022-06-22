@@ -15,7 +15,7 @@
 
     onMounted(() => {
         if (sessionStorage.getItem("token") && sessionStorage.getItem("userInfo")) {
-            store.userInfo = JSON.stringify(sessionStorage.getItem("userInfo"))
+            store.userInfo = sessionStorage.getItem("userInfo") ?? ''
         } else {
             clearUserInfo()
         }
