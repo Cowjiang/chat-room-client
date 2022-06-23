@@ -83,7 +83,6 @@
      * @param index 点击的按钮序号
      */
     const handleNavItemClick = (index: number) => {
-        store.currentNavItemIndex = index
         emit('update', {index: index, detail: navItemList.value[index]})
     }
 </script>

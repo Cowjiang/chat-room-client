@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import login from '@/views/login/login.vue'
 import index from '@/views/index/index.vue'
-import {clearUserInfo} from "@/common/utils"
+import {clearUserInfo} from '@/common/utils'
 
 const routes: RouteRecordRaw[] = [
     {
@@ -15,13 +15,31 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/login',
         name: 'login',
-        component: login,
+        component: login
     },
     {
         path: '/index/:navItem',
         name: 'index',
-        component: index,
+        component: index
     },
+    {
+        path: '/index/home/friend',
+        redirect: '/index/home/friend/all'
+    },
+    {
+        path: '/index/home/friend/:friendType',
+        name: 'friend',
+        component: index
+    },
+    {
+        path: '/index/home/chat/:chatType/:roomId',
+        name: 'chat',
+        component: index
+    },
+    {
+        path: '/:catchAll(.*)',
+        redirect: '/index/home'
+    }
 ]
 
 const router = createRouter({

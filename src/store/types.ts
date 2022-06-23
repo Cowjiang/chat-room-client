@@ -23,3 +23,13 @@ export interface ChatMessageHistory {
     messageList: Array<any> //消息记录数组
     pageNumber: number
 }
+
+export interface FriendInfo {
+    id: string
+    roomId: string
+    nickname: string
+    photo: string
+    signature: string
+    level: number
+    createDate: string
+}

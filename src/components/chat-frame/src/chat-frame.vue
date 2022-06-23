@@ -129,16 +129,14 @@
 </template>
 
 <script lang="ts" setup>
-    import {nextTick, ref, watch} from "vue"
-    import {defineProps, withDefaults, onMounted} from 'vue'
-    import {useStore} from "@/store"
-    import {storeToRefs} from "pinia"
-    import axios from "axios"
-    import Loading from "@/components/loading"
-    import {getSingleChatHistoryApi} from "@/service/api/chats"
+    import {nextTick, ref, watch, defineProps, withDefaults, onMounted} from 'vue'
+    import {useStore} from '@/store'
+    import {storeToRefs} from 'pinia'
+    import axios, {AxiosError, AxiosResponse} from 'axios'
+    import Loading from '@/components/loading'
+    import {formatTime, computeDatetime, removeDuplicateObj} from '@/common/utils'
+    import {getSingleChatHistoryApi} from '@/service/api/chats'
     import {ChatInfo} from '@/store/types'
-    import {AxiosError, AxiosResponse} from "axios"
-    import {formatTime, computeDatetime, removeDuplicateObj} from "@/common/utils"
 
     const store = useStore()
     const {getUserInfo, primaryColor} = storeToRefs(store)

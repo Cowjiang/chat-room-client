@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
-import {formatTime} from "@/common/utils";
-import {NavItemList, ChatInfo, ChatMessageHistory} from "@/store/types";
+import {formatTime} from '@/common/utils'
+import {NavItemList, ChatInfo, ChatMessageHistory, FriendInfo} from '@/store/types'
 
 export const useStore = defineStore({
     id: 'store',
@@ -12,12 +12,13 @@ export const useStore = defineStore({
         currentNavItemIndex: 0, //当前导航栏显示的项目的序号
         chatList: [] as ChatInfo[], //消息列表
         chatMessageHistory: new Map() as Map<string, ChatMessageHistory>, //聊天消息记录缓存
+        friendList: [] as FriendInfo[], //好友列表
     }),
     getters: {
         //获取用户信息
         getUserInfo: state => (JSON.parse(state.userInfo)),
         //获取我的聊天列表
-        getChatList: state => state.chatList.map(chat => {
+        getChatList: state => JSON.parse(JSON.stringify(state.chatList)).map((chat: ChatInfo) => {
             chat.time = formatTime(chat.time, false)
             return chat
         }),
@@ -33,7 +34,7 @@ export const useStore = defineStore({
                 nickname: chat.nickname,
                 avatarUrl: chat.photo ?? chat.avatarUrl,
                 remarkName: chat.friendBeiZu ?? chat.remarkName ?? null,
-                lastMessage: chat.lastMessage,
+                lastMessage: chat.lastMessage ?? '[新会话]',
                 time: chat.time
             }))
         },
@@ -55,6 +56,9 @@ export const useStore = defineStore({
                 pageNumber: pageNumber
             }
             this.chatMessageHistory.set(roomId, chatMessageHistory)
+        },
+        setFriendList(friendList: any[]) {
+
         }
     }
 })

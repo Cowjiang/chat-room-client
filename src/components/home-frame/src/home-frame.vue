@@ -101,23 +101,30 @@
       <div class="bottom-mask"></div>
     </div>
     <div class="home-main-container h-100 flex-grow-1">
+      <friend-frame
+        v-if="currentNavItemIndex === -1"
+        :friend-type="currentFriendListType"/>
       <chat-frame
-        v-if="currentNavItemIndex !== -1"
+        v-else
         :chat-info="getChatList[currentNavItemIndex]"/>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-    import {onMounted, ref} from 'vue'
-    import {useStore} from "@/store"
-    import {storeToRefs} from "pinia"
-    import ChatFrame from "@/components/chat-frame";
+    import {onMounted, ref, watch} from 'vue'
+    import {useStore} from '@/store'
+    import {storeToRefs} from 'pinia'
+    import {useRoute, useRouter} from 'vue-router'
+    import ChatFrame from '@/components/chat-frame'
+    import FriendFrame, {FriendType} from '@/components/friend-frame/src/friend-frame.vue'
 
     const store = useStore()
     const {primaryColor, getChatList} = storeToRefs(store)
-
-    const currentNavItemIndex = ref(-1)
+    const router = useRouter()
+    const route = useRoute()
+    const currentNavItemIndex = ref(-1) //当前左侧列表导航栏聚焦项的序号
+    const currentFriendListType = ref<FriendType>(0) //好友列表的类型
 
     /**
      * 左侧菜单点击事件
@@ -125,10 +132,65 @@
      */
     const handleNavItemClick = (index: number): void => {
         currentNavItemIndex.value = index
+        if (index === -1) {
+            router.replace({
+                name: 'friend',
+                params: {
+                    friendType: 'all'
+                }
+            })
+        }
+        else {
+            router.replace({
+                name: 'chat',
+                params: {
+                    chatType: 'private',
+                    roomId: getChatList.value[index].id
+                }
+            })
+        }
     }
 
-    onMounted(() => {
+    watch(
+        () => route.params,
+        nVal => {
+            if (nVal.roomId) {
+                const chatIndex = getChatList.value.findIndex((chat: { id: string }) => chat.id === nVal.roomId)
+                if (chatIndex !== -1) {
+                    currentNavItemIndex.value = chatIndex
+                }
+            }
+            else if (nVal.friendType) {
+                const index = ['all', 'online', 'request', 'block'].findIndex(v => v === nVal.friendType)
+                currentFriendListType.value = (index === -1 ? 0 : index) as FriendType
+            }
+        },
+        {
+            immediate: true
+        }
+    )
 
+    onMounted(() => {
+        if (route.params.roomId) {
+            const chatListWatcher = watch(
+                () => getChatList.value,
+                () => {
+                    const chatIndex = getChatList.value.findIndex((chat: { id: string }) => chat.id === route.params.roomId)
+                    if (chatIndex !== -1) {
+                        currentNavItemIndex.value = chatIndex
+                    }
+                    else {
+                        router.replace({
+                            name: 'friend',
+                            params: {
+                                friendType: 'all'
+                            }
+                        })
+                    }
+                    chatListWatcher()
+                }
+            )
+        }
     })
 </script>
 

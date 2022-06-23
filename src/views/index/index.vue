@@ -14,17 +14,17 @@
 
 <script lang="ts" setup>
     import {onMounted, ref, watch} from 'vue'
-    import {useStore} from "@/store"
-    import {storeToRefs} from "pinia"
+    import {useStore} from '@/store'
+    import {storeToRefs} from 'pinia'
     import {useRoute, useRouter} from 'vue-router'
-    import NavigationBar from "@/components/navigation-bar/src/navigation-bar.vue"
-    import HomeFrame from "@/components/home-frame"
-    import Loading from "@/components/loading"
-    import {getChatListApi} from "@/service/api/chats";
-    import {AxiosError, AxiosResponse} from "axios";
+    import {AxiosError, AxiosResponse} from 'axios'
+    import NavigationBar from '@/components/navigation-bar/src/navigation-bar.vue'
+    import HomeFrame from '@/components/home-frame'
+    import Loading from '@/components/loading'
+    import {getChatListApi} from '@/service/api/chats'
 
     const store = useStore()
-    const {backgroundColor, navItemList, currentNavItemIndex, chatList} = storeToRefs(store)
+    const {backgroundColor, navItemList, currentNavItemIndex} = storeToRefs(store)
     const router = useRouter()
     const route = useRoute()
 
@@ -37,9 +37,11 @@
 
     // 导航栏点击事件
     const handleNavItemClick = (e: NavItemClickEvent) => {
-        store.currentNavItemIndex = e.index
-        const navItem = e.detail.name ?? 'home'
-        router.replace({name: 'index', params: {navItem}})
+        if (currentNavItemIndex.value !== e.index) {
+            store.currentNavItemIndex = e.index
+            const navItem = e.detail.name ?? 'home'
+            router.replace({name: 'index', params: {navItem}})
+        }
     }
 
     // 获取聊天列表
