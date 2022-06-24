@@ -9,3 +9,7 @@ export interface RegisterParams {
     password: string | number,
     code: string
 }
+
+export interface GetUserProfileParams {
+    uid: string
+}

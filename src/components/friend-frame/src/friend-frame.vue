@@ -1,7 +1,7 @@
 <template>
   <div class="friend-frame-container w-100 h-100 d-flex flex-column">
     <div class="title-container w-100 px-6 d-flex flex-shrink-0 align-center">
-      <div class="title">
+      <div class="title flex-shrink-0 ">
         <i class="fa-solid fa-users mr-4"/>
         <span class="font-weight-bold text-grey-darken-3">好友</span>
       </div>
@@ -12,6 +12,7 @@
           :vertical="true"/>
       </div>
       <v-btn-toggle
+        class="flex-shrink-0"
         v-model="currentFriendType"
         :color="primaryColor"
         group mandatory
@@ -19,33 +20,21 @@
         density="compact">
         <v-btn
           class="text-subtitle-1 mx-1"
+          v-for="type in friendTypeList"
+          :key="type"
           :flat="true"
           height="30"
           rounded="pill">
-          全部好友
-        </v-btn>
-        <v-btn
-          class="text-subtitle-1 mx-1"
-          :flat="true"
-          height="30"
-          rounded="pill">
-          在线
-        </v-btn>
-        <v-btn
-          class="text-subtitle-1 mx-1"
-          :flat="true"
-          height="30"
-          rounded="pill">
-          请求
-        </v-btn>
-        <v-btn
-          class="text-subtitle-1 mx-1"
-          :flat="true"
-          height="30"
-          rounded="pill">
-          黑名单
+          {{ type }}
         </v-btn>
       </v-btn-toggle>
+      <v-btn
+        class="ml-4 flex-shrink-0"
+        color="success"
+        :flat="true"
+        height="32">
+        添加好友
+      </v-btn>
     </div>
     <div class="content-container w-100 pa-5 d-flex flex-column flex-grow-1">
       <v-list>
@@ -60,7 +49,7 @@
           rounded
           @click="handleFriendClick(friend)">
           <v-list-item-avatar
-            :color="primaryColor"
+            color="grey-lighten-3"
             start>
             <v-img
               :src="friend.photo"
@@ -86,10 +75,45 @@
               :icon="true"
               @click.stop="">
               <i class="fa-solid fa-ellipsis"></i>
+              <v-menu activator="parent" location="start">
+                <v-list
+                  class="text-subtitle-2"
+                  elevation="3"
+                  rounded="lg"
+                  density="compact"
+                  min-width="150"
+                  @update:selected="handleFriendMenuClick(friend, $event)">
+                  <v-list-item :value="0">
+                    个人资料
+                  </v-list-item>
+                  <v-list-item :value="1">
+                    私信
+                  </v-list-item>
+                  <v-list-item class="text-red" :value="2">
+                    删除好友
+                  </v-list-item>
+                  <v-list-item class="text-red" :value="3">
+                    屏蔽该用户
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </v-btn>
           </v-list-item-avatar>
         </v-list-item>
       </v-list>
+      <div
+        v-if="!currentFriendList.length"
+        class="w-100 h-75 d-flex flex-column align-center justify-center text-grey-lighten-1">
+        <div class="text-h1 mb-6 font-weight-medium">
+          ╮(╯_╰)╭
+        </div>
+        <div>
+          这里没有更多数据噢
+        </div>
+      </div>
+      <user-profile-popup
+        v-model="userProfilePopupProps.value"
+        :uid="userProfilePopupProps.uid"/>
     </div>
   </div>
 </template>
@@ -100,14 +124,20 @@
     import {storeToRefs} from 'pinia'
     import {useRouter} from 'vue-router'
     import {AxiosError, AxiosResponse} from 'axios'
+    import UserProfilePopup from '@/components/user-profile-popup'
     import {getFriendsListApi} from '@/service/api/firends'
     import {FriendInfo} from '@/store/types'
+    import {FriendType} from '@/components/friend-frame'
 
     interface Props {
-        friendType: FriendType
+        friendType: FriendType //好友类型
     }
 
-    export type FriendType = 0 | 1 | 2 | 3 //好友类型，0:全部，1:在线，2:请求，3:黑名单
+    //用户个人资料弹窗组件的属性
+    interface UserProfilePopupProps {
+        value: boolean //控制弹窗显示隐藏
+        uid: string //用户id
+    }
 
     const props = withDefaults(defineProps<Props>(), {
         friendType: 0
@@ -115,9 +145,14 @@
     const store = useStore()
     const {primaryColor, getChatList} = storeToRefs(store)
     const router = useRouter()
+    const friendTypeList = ['全部好友', '在线', '请求', '已屏蔽'] //好友列表类型标题
     const currentFriendType = ref<FriendType>(props.friendType) //当前的好友类型
     const currentFriendList = ref<FriendInfo[]>([]) //当前好友类型下的好友列表
     const currentFriendAmount = ref<number>(0) //当前好友类型下好友数量
+    const userProfilePopupProps = ref<UserProfilePopupProps>({
+        value: false,
+        uid: '61c305a85889c217e31e6f7a'
+    })
 
     /**
      * 获取好友列表数据
@@ -187,6 +222,16 @@
                 avatarUrl: friend.photo,
                 time: Date()
             }, ...store.chatList])
+        }
+    }
+
+    const handleFriendMenuClick = (friend: FriendInfo, e: Array<number>) => {
+        if (e[0] === 0) {
+            userProfilePopupProps.value.uid = friend.id
+            userProfilePopupProps.value.value = true
+        }
+        else if (e[0] === 1) {
+            handleFriendClick(friend)
         }
     }
 

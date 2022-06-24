@@ -18,7 +18,7 @@
     import {storeToRefs} from 'pinia'
     import {useRoute, useRouter} from 'vue-router'
     import {AxiosError, AxiosResponse} from 'axios'
-    import NavigationBar from '@/components/navigation-bar/src/navigation-bar.vue'
+    import NavigationBar from '@/components/navigation-bar'
     import HomeFrame from '@/components/home-frame'
     import Loading from '@/components/loading'
     import {getChatListApi} from '@/service/api/chats'

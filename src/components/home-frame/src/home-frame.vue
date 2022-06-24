@@ -58,7 +58,7 @@
               @click="handleNavItemClick(index)">
               <v-avatar
                 class="flex-shrink-0"
-                :color="primaryColor"
+                color="grey-lighten-2"
                 size="default">
                 <v-img
                   :src="chat.avatarUrl"
@@ -117,7 +117,7 @@
     import {storeToRefs} from 'pinia'
     import {useRoute, useRouter} from 'vue-router'
     import ChatFrame from '@/components/chat-frame'
-    import FriendFrame, {FriendType} from '@/components/friend-frame/src/friend-frame.vue'
+    import FriendFrame, {FriendType} from '@/components/friend-frame'
 
     const store = useStore()
     const {primaryColor, getChatList} = storeToRefs(store)

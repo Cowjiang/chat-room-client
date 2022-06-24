@@ -1,11 +1,14 @@
 import http from '@/service/http'
-import {LoginParams, RegisterParams} from './types'
+import {GetUserProfileParams, LoginParams, RegisterParams} from './types'
 
 //登录
 export const loginApi = (params: LoginParams) => http.post('/user/login', params)
 
 //注册
 export const registerApi = (params: RegisterParams) => http.post('/user/register', params)
+
+//根据用户id获取个人资料
+export const getUserProfileApi = (params: GetUserProfileParams) => http.get(`/user/getUserInfo/${params.uid}`)
 
 //
 // //获取群聊列表
