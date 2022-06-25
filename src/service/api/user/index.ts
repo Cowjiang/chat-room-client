@@ -1,5 +1,5 @@
 import http from '@/service/http'
-import {GetUserProfileParams, LoginParams, RegisterParams} from './types'
+import {GetUserProfileParams, LoginParams, RegisterParams, SearchUserParams} from './types'
 
 //登录
 export const loginApi = (params: LoginParams) => http.post('/user/login', params)
@@ -9,6 +9,9 @@ export const registerApi = (params: RegisterParams) => http.post('/user/register
 
 //根据用户id获取个人资料
 export const getUserProfileApi = (params: GetUserProfileParams) => http.get(`/user/getUserInfo/${params.uid}`)
+
+//搜索用户
+export const searchUserApi = (params: SearchUserParams) => http.post('/user/preFetchUser', params)
 
 //
 // //获取群聊列表
@@ -29,14 +32,6 @@ export const getUserProfileApi = (params: GetUserProfileParams) => http.get(`/us
 //
 // //阿里云上传文件（废弃）
 // export const uploadFileApi = (file) => http.post('/system/upload', {file}, {headers: {'Content-Type': 'multipart/form-data'}});
-//
-// //搜索用户
-// export const searchUser = (type, searchContent, pageIndex, pageSize) => http.post('/user/preFetchUser', {
-//     type,
-//     searchContent,
-//     pageIndex,
-//     pageSize
-// });
 //
 // //获取好友聊天记录
 // export const getSingleChatHistory = (roomId, pageIndex, pageSize) => http.get(`/singleMessage/getRecentSingleMessages?roomId=${roomId}&pageIndex=${pageIndex}&pageSize=${pageSize}`);

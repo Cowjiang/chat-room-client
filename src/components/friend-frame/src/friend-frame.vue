@@ -34,6 +34,7 @@
         :flat="true"
         height="32">
         添加好友
+        <search-popup/>
       </v-btn>
     </div>
     <div class="content-container w-100 pa-5 d-flex flex-column flex-grow-1">
@@ -119,15 +120,16 @@
 </template>
 
 <script lang="ts" setup>
-    import {ref, watch, onMounted, withDefaults, defineProps} from 'vue'
+    import {ref, watch, withDefaults, defineProps} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {useRouter} from 'vue-router'
     import {AxiosError, AxiosResponse} from 'axios'
     import UserProfilePopup from '@/components/user-profile-popup'
+    import {FriendType} from '@/components/friend-frame'
+    import SearchPopup from '@/components/search-popup'
     import {getFriendsListApi} from '@/service/api/firends'
     import {FriendInfo} from '@/store/types'
-    import {FriendType} from '@/components/friend-frame'
 
     interface Props {
         friendType: FriendType //好友类型
@@ -151,7 +153,7 @@
     const currentFriendAmount = ref<number>(0) //当前好友类型下好友数量
     const userProfilePopupProps = ref<UserProfilePopupProps>({
         value: false,
-        uid: '61c305a85889c217e31e6f7a'
+        uid: ''
     })
 
     /**
@@ -225,6 +227,11 @@
         }
     }
 
+    /**
+     * 好友列表更多操作菜单点击事件
+     * @param friend 好友信息
+     * @param e 当前点击的菜单项序号数组
+     */
     const handleFriendMenuClick = (friend: FriendInfo, e: Array<number>) => {
         if (e[0] === 0) {
             userProfilePopupProps.value.uid = friend.id
@@ -252,10 +259,6 @@
             immediate: true
         }
     )
-
-    onMounted(() => {
-
-    })
 </script>
 
 <style lang="scss" scoped>

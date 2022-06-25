@@ -5,7 +5,9 @@
     </div>
     <div class="content-wrapper h-100 flex-grow-1 pt-2 pr-2 pb-2">
       <div class="content-container w-100 h-100 rounded-lg bg-white overflow-hidden">
+        <search-popup v-model="showSearchPopup"/>
         <home-frame v-if="currentNavItemIndex === 0"/>
+        <setting-frame v-else-if="currentNavItemIndex === navItemList.findIndex(item => item.name === 'setting')"/>
       </div>
     </div>
     <loading v-model="loadingStatus" enterDuration="0s"/>
@@ -20,27 +22,34 @@
     import {AxiosError, AxiosResponse} from 'axios'
     import NavigationBar from '@/components/navigation-bar'
     import HomeFrame from '@/components/home-frame'
+    import SettingFrame from '@/components/setting-frame'
     import Loading from '@/components/loading'
+    import SearchPopup from '@/components/search-popup'
     import {getChatListApi} from '@/service/api/chats'
-
-    const store = useStore()
-    const {backgroundColor, navItemList, currentNavItemIndex} = storeToRefs(store)
-    const router = useRouter()
-    const route = useRoute()
-
-    const loadingStatus = ref(true)
 
     interface NavItemClickEvent {
         index: number,
         detail: any
     }
 
+    const store = useStore()
+    const {backgroundColor, navItemList, currentNavItemIndex} = storeToRefs(store)
+    const router = useRouter()
+    const route = useRoute()
+    const loadingStatus = ref(true)
+    const showSearchPopup = ref(false)
+
     // 导航栏点击事件
     const handleNavItemClick = (e: NavItemClickEvent) => {
         if (currentNavItemIndex.value !== e.index) {
-            store.currentNavItemIndex = e.index
-            const navItem = e.detail.name ?? 'home'
-            router.replace({name: 'index', params: {navItem}})
+            if (e.detail.name === 'search') {
+                showSearchPopup.value = true
+            }
+            else {
+                store.currentNavItemIndex = e.index
+                const navItem = e.detail.name ?? 'home'
+                router.replace({name: 'index', params: {navItem}})
+            }
         }
     }
 

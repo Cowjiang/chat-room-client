@@ -39,6 +39,9 @@
               rounded="default"
               density="compact"
               min-width="150">
+              <v-list-item value="0">
+                修改备注
+              </v-list-item>
               <v-list-item class="text-red" value="1">
                 删除好友
               </v-list-item>
