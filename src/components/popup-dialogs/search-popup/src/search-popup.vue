@@ -93,6 +93,11 @@
     <user-profile-popup
       v-model="userProfilePopupProps.value"
       :uid="userProfilePopupProps.uid"/>
+    <validate-message-popup
+      v-model="validateMessagePopupProps.value"
+      :type="validateMessagePopupProps.type"
+      :receiverId="validateMessagePopupProps.receiverId"
+      :groupId="validateMessagePopupProps.groupId"/>
   </v-dialog>
 </template>
 
@@ -102,6 +107,9 @@
     import {storeToRefs} from 'pinia'
     import UserProfilePopup from '@/components/popup-dialogs/user-profile-popup'
     import EmptyResult from '@/components/popup-dialogs/search-popup/src/empty-result.vue'
+    import ValidateMessagePopup from '@/components/popup-dialogs/validate-message-popup'
+    import {UserProfilePopupProps} from '@/components/popup-dialogs/user-profile-popup/src/user-profile-popup.vue'
+    import {ValidateMessagePopupProps} from '@/components/popup-dialogs/validate-message-popup/src/validate-message-popup.vue'
     import {searchUserApi} from '@/service/api/user'
     import {searchGroupApi} from '@/service/api/groups'
 
@@ -110,12 +118,6 @@
     interface Props {
         value: boolean //控制弹窗显示隐藏
         type: SearchType //当前搜索的类型
-    }
-
-    //用户个人资料弹窗组件的属性
-    interface UserProfilePopupProps {
-        value: boolean //控制弹窗显示隐藏
-        uid: string //用户id
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -147,7 +149,13 @@
     const userProfilePopupProps = ref<UserProfilePopupProps>({
         value: false,
         uid: ''
-    })
+    }) //用户个人资料弹窗组件的属性
+    const validateMessagePopupProps = ref<ValidateMessagePopupProps>({
+        value: false,
+        type: 0,
+        receiverId: '',
+        groupId: ''
+    }) //验证消息弹窗组件的属性
 
     /**
      * 获取搜索结果
@@ -201,7 +209,10 @@
      * @param userInfo 用户信息
      */
     const handleAddFriend = (userInfo: any) => {
-        console.log(userInfo)
+        validateMessagePopupProps.value.type = 0
+        validateMessagePopupProps.value.receiverId = userInfo.uid
+        validateMessagePopupProps.value.groupId = null
+        validateMessagePopupProps.value.value = true
     }
 
     // 关闭弹窗事件

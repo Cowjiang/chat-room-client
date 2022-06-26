@@ -137,6 +137,7 @@
     import {formatTime, computeDatetime, removeDuplicateObj} from '@/common/utils'
     import {getSingleChatHistoryApi} from '@/service/api/chats'
     import {ChatInfo} from '@/store/types'
+    import {sendSocketMessage} from "@/service/socket";
 
     const store = useStore()
     const {getUserInfo, primaryColor} = storeToRefs(store)
@@ -243,6 +244,7 @@
                 isReadUser: [getUserInfo.value.uid],
                 conversationType: 'FRIEND'
             }
+            sendSocketMessage('sendNewMessage', message)
             chatMessageHistory.value.push(message)
             inputValue.value = ''
             nextTick(() => {
@@ -289,6 +291,7 @@
                     isReadUser: [getUserInfo.value.uid],
                     conversationType: "FRIEND"
                 }
+                sendSocketMessage('sendNewMessage', message)
                 chatMessageHistory.value.push(message)
                 setTimeout(() => {
                     if (chatMessageArea.value) {

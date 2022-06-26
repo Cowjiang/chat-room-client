@@ -7,9 +7,10 @@
 </template>
 
 <script lang="ts" setup>
-    import {onMounted} from "vue"
-    import {useStore} from "@/store"
-    import {clearUserInfo} from "@/common/utils"
+    import {onMounted, onUnmounted} from 'vue'
+    import {useStore} from '@/store'
+    import {clearUserInfo} from '@/common/utils'
+    import {disconnectSocket} from '@/service/socket'
 
     const store = useStore()
 
@@ -19,6 +20,10 @@
         } else {
             clearUserInfo()
         }
+    })
+
+    onUnmounted(() => {
+        disconnectSocket()
     })
 </script>
 

@@ -13,6 +13,7 @@ export const useStore = defineStore({
         chatList: [] as ChatInfo[], //消息列表
         chatMessageHistory: new Map() as Map<string, ChatMessageHistory>, //聊天消息记录缓存
         friendList: [] as FriendInfo[], //好友列表
+        $socket: null as any, //Socket对象
     }),
     getters: {
         //获取用户信息

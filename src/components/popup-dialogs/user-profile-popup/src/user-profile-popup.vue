@@ -86,12 +86,12 @@
     import {getUserProfileApi} from '@/service/api/user'
     import {AxiosResponse} from 'axios'
 
-    interface Props {
+    export interface UserProfilePopupProps {
         value: boolean //控制弹窗显示隐藏
         uid: string //用户id
     }
 
-    const props = withDefaults(defineProps<Props>(), {
+    const props = withDefaults(defineProps<UserProfilePopupProps>(), {
         value: false,
         uid: ''
     })

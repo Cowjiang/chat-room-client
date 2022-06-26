@@ -26,6 +26,7 @@
     import Loading from '@/components/loading'
     import SearchPopup from '@/components/popup-dialogs/search-popup'
     import {getChatListApi} from '@/service/api/chats'
+    import {connectSocket} from '@/service/socket'
 
     interface NavItemClickEvent {
         index: number,
@@ -44,8 +45,7 @@
         if (currentNavItemIndex.value !== e.index) {
             if (e.detail.name === 'search') {
                 showSearchPopup.value = true
-            }
-            else {
+            } else {
                 store.currentNavItemIndex = e.index
                 const navItem = e.detail.name ?? 'home'
                 router.replace({name: 'index', params: {navItem}})
@@ -92,6 +92,7 @@
     )
 
     onMounted(() => {
+        connectSocket()
         store.navItemList = [
             {name: 'home', title: '主页', icon: 'fas fa-house'},
             {name: 'group', title: '我的群聊', icon: 'fas fa-user-friends'},
