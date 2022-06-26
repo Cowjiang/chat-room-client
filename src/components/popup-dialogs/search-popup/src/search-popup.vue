@@ -100,8 +100,8 @@
     import {defineProps, withDefaults, defineEmits, ref, watch} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
-    import UserProfilePopup from '@/components/user-profile-popup'
-    import EmptyResult from '@/components/search-popup/src/empty-result.vue'
+    import UserProfilePopup from '@/components/popup-dialogs/user-profile-popup'
+    import EmptyResult from '@/components/popup-dialogs/search-popup/src/empty-result.vue'
     import {searchUserApi} from '@/service/api/user'
     import {searchGroupApi} from '@/service/api/groups'
 

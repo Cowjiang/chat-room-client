@@ -116,8 +116,8 @@
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {useRoute, useRouter} from 'vue-router'
-    import ChatFrame from '@/components/chat-frame'
-    import FriendFrame, {FriendType} from '@/components/friend-frame'
+    import ChatFrame from '@/components/frames/chat-frame'
+    import FriendFrame, {FriendType} from '@/components/frames/friend-frame'
 
     const store = useStore()
     const {primaryColor, getChatList} = storeToRefs(store)

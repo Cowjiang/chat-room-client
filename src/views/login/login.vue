@@ -8,7 +8,7 @@
 
 <script lang="ts" setup>
     import {onMounted, ref} from 'vue'
-    import LoginPopup from '@/components/login-popup/src/login-popup.vue'
+    import LoginPopup from '@/components/popup-dialogs/login-popup/src/login-popup.vue'
 
     const showLoginPopup = ref(true)
     onMounted(() => {

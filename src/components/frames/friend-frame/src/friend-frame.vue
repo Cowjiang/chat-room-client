@@ -125,9 +125,9 @@
     import {storeToRefs} from 'pinia'
     import {useRouter} from 'vue-router'
     import {AxiosError, AxiosResponse} from 'axios'
-    import UserProfilePopup from '@/components/user-profile-popup'
-    import {FriendType} from '@/components/friend-frame'
-    import SearchPopup from '@/components/search-popup'
+    import UserProfilePopup from '@/components/popup-dialogs/user-profile-popup'
+    import {FriendType} from '@/components/frames/friend-frame'
+    import SearchPopup from '@/components/popup-dialogs/search-popup'
     import {getFriendsListApi} from '@/service/api/firends'
     import {FriendInfo} from '@/store/types'
 

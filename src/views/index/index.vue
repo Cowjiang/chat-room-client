@@ -21,10 +21,10 @@
     import {useRoute, useRouter} from 'vue-router'
     import {AxiosError, AxiosResponse} from 'axios'
     import NavigationBar from '@/components/navigation-bar'
-    import HomeFrame from '@/components/home-frame'
-    import SettingFrame from '@/components/setting-frame'
+    import HomeFrame from '@/components/frames/home-frame'
+    import SettingFrame from '@/components/frames/setting-frame'
     import Loading from '@/components/loading'
-    import SearchPopup from '@/components/search-popup'
+    import SearchPopup from '@/components/popup-dialogs/search-popup'
     import {getChatListApi} from '@/service/api/chats'
 
     interface NavItemClickEvent {
