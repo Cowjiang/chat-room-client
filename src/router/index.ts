@@ -48,6 +48,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
+    console.log(to, from)
     if (to.path !== '/login') {
         if (!sessionStorage.getItem("token")) {
             clearUserInfo()

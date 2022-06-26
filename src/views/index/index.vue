@@ -83,13 +83,13 @@
         loadingStatus.value = false
     })
 
-    watch(
-        () => route.params.navItem,
-        async navItem => {
-            const index = navItemList.value.findIndex(item => item.name == navItem)
-            store.currentNavItemIndex = index === -1 ? 0 : index
-        }
-    )
+    // watch(
+    //     () => route.params.navItem,
+    //     async navItem => {
+    //         const index = navItemList.value.findIndex(item => item.name == navItem)
+    //         store.currentNavItemIndex = index === -1 ? 0 : index
+    //     }
+    // )
 
     onMounted(() => {
         connectSocket()
@@ -106,6 +106,18 @@
             {name: 'search', title: '搜索', icon: 'fas fa-search'},
             {name: 'setting', title: '设置中心', icon: 'fas fa-cog'}
         ]
+        if (route.params.navItem) {
+            const navItemIndex = navItemList.value.findIndex((navItem: { name: string }) => navItem.name === route.params.navItem)
+            if (navItemIndex !== -1) {
+                store.currentNavItemIndex = navItemIndex
+                router.replace({
+                    name: 'index',
+                    params: {
+                        navItem: route.params.navItem
+                    }
+                })
+            }
+        }
     })
 </script>
 

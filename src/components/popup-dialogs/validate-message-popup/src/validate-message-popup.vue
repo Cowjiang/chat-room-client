@@ -115,10 +115,12 @@
             if (groupId.value) {
                 Object.assign(validateMessage, {groupId: groupId.value})
             }
-            sendSocketMessage('sendValidateMessage', validateMessage)
-            setTimeout(() => {
+            sendSocketMessage('sendValidateMessage', validateMessage).then(() => {
                 sendRequestStatus.value = 1
-            }, 500)
+            }).catch(err => {
+                sendRequestStatus.value = 2
+                console.error(err)
+            })
         }
     }
 

@@ -1,4 +1,5 @@
 import {useStore} from "@/store"
+import {disconnectSocket} from '@/service/socket'
 
 // 清除用户信息
 export const clearUserInfo = (): void => {
@@ -6,6 +7,7 @@ export const clearUserInfo = (): void => {
     store.$reset()
     sessionStorage.removeItem('token')
     sessionStorage.removeItem('userInfo')
+    disconnectSocket()
 }
 
 /**

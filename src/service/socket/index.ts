@@ -14,13 +14,18 @@ export const connectSocket = () => {
     store.$socket.on('message',(data: any) =>{
         console.log(data)
     })
+    store.$socket.on('success',(data: any) =>{
+        console.log(data)
+    })
 }
 
 //断开socket
 export const disconnectSocket = () => {
     const store = useStore()
-    store.$socket.emit('leave')
-    store.$socket = null
+    if (store.$socket) {
+        store.$socket.emit('leave')
+        store.$socket = null
+    }
 }
 
 /**
@@ -28,9 +33,12 @@ export const disconnectSocket = () => {
  * @param event socket的事件名称
  * @param data 数据
  */
-export const sendSocketMessage = (event: String, data?: any) => {
+export const sendSocketMessage = (event: String, data?: any) => new Promise((resolve, reject) => {
     const store = useStore()
-    store.$socket.emit(event, data ?? null, (res: any) => {
-        console.log(res)
-    })
-}
+    if (store.$socket) {
+        store.$socket.emit(event, data ?? null)
+        store.$socket.on(event, (res: any) => {
+            res.success ? resolve(res) : reject(res)
+        })
+    }
+})
