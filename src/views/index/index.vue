@@ -7,6 +7,7 @@
       <div class="content-container w-100 h-100 rounded-lg bg-white overflow-hidden">
         <search-popup v-model="showSearchPopup"/>
         <home-frame v-if="currentNavItemIndex === 0"/>
+        <group-frame v-else-if="currentNavItemIndex === 1"/>
         <setting-frame v-else-if="currentNavItemIndex === navItemList.findIndex(item => item.name === 'setting')"/>
       </div>
     </div>
@@ -38,6 +39,7 @@
     import {AxiosError, AxiosResponse} from 'axios'
     import NavigationBar from '@/components/navigation-bar'
     import HomeFrame from '@/components/frames/home-frame'
+    import GroupFrame from '@/components/frames/group-frame'
     import SettingFrame from '@/components/frames/setting-frame'
     import Loading from '@/components/loading'
     import SearchPopup from '@/components/popup-dialogs/search-popup'
