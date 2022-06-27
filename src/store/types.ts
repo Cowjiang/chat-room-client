@@ -33,3 +33,15 @@ export interface FriendInfo {
     level: number
     createDate: string
 }
+
+export interface UserSettings {
+    backgroundColor?: string | null
+    chatTop?: string | null
+    id?: string | null
+    messageNotify?: string | null
+    notifyStatus?: string | null
+    primaryColor?: string | null
+    publicStatus?: string | null
+    userId?: string | null
+    volume?: string | null
+}

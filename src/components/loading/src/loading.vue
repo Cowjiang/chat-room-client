@@ -2,8 +2,8 @@
   <transition name="fade">
     <div
       class="loading-wrapper w-100 h-100 d-flex flex-column justify-center align-center bg-white"
+      :style="{zIndex: props.zIndex}"
       v-if="props.modelValue">
-<!--      :class="props.modelValue ? '' : 'animated animate__fadeOut loading-wrapper__disabled'"-->
       <div class="loading-text text-h6 mb-4 text-grey-darken-1">
         {{ props.loadingText }}
       </div>
@@ -31,6 +31,7 @@
         position?: Position, //position的取值，默认为fixed
         enterDuration?: string, //进入动画的持续时间
         leaveDuration?: string //离开动画的持续时间
+        zIndex ?: number //z-index的值
     }
 
     const props = withDefaults(defineProps<Props>(), {
@@ -38,7 +39,8 @@
         color: '#66c',
         position: 'fixed',
         enterDuration: '0.5s',
-        leaveDuration: '0.5s'
+        leaveDuration: '0.5s',
+        zIndex: 9999
     })
 
     const position = ref(props.position) //position的取值
@@ -52,7 +54,6 @@
   $leaveDuration: v-bind(leaveDuration);
 
   .loading-wrapper {
-    z-index: 9999;
     position: $position;
   }
 

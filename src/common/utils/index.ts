@@ -54,12 +54,64 @@ export const computeDatetime = (oldTime: string, newTime: string): boolean => (n
  * @param arr 要去重的目标数组
  * @returns {Array<any>} 去重后的数组
  */
-export const removeDuplicateObj = (arr: Array<any>) => {
-    const obj = {};
+export const removeDuplicateObj = (arr: Array<any>): Array<any> => {
+    const obj: any = {}
     arr = arr.reduce((newArr, next) => {
-        // @ts-ignore
-        obj[next.id] ? "" : (obj[next.id] = newArr.push(next));
-        return newArr;
-    }, []);
-    return arr;
-};
+        !obj[next.id] ? (obj[next.id] = newArr.push(next)) : ''
+        return newArr
+    }, [])
+    return arr
+}
+
+//工具类
+export class Utils {
+    throttleBackTime = 0;
+    throttleGapTime = 0;
+    throttleEnterTime = 0;
+    debounceTimer = null;
+    debounceGapTime = 0;
+
+    /**
+     * 节流函数
+     * @param fn 要执行的方法
+     * @param interval 等待时间，默认500ms
+     */
+    throttle(fn: Function, interval: number) {
+        this.throttleGapTime = interval || 500;
+        (() => {
+            // @ts-ignore
+            this.throttleBackTime = new Date();
+            if (this.throttleBackTime - this.throttleEnterTime > this.throttleGapTime) {
+                // eslint-disable-next-line prefer-rest-params
+                fn.call(this, arguments);
+                this.throttleEnterTime = this.throttleBackTime;
+            }
+        })();
+    }
+
+    // 重置节流函数
+    resetThrottle() {
+        this.throttleBackTime = 0;
+        this.throttleGapTime = 0;
+        this.throttleEnterTime = 0;
+    }
+
+    /**
+     * 防抖函数
+     * @param fn 要执行的方法
+     * @param interval 等待时间，默认500ms
+     */
+    debounce(fn: Function, interval: number) {
+        this.debounceGapTime = interval || 500;
+        (() => {
+            // @ts-ignore
+            clearTimeout(this.debounceTimer);
+            // eslint-disable-next-line prefer-rest-params
+            const args = arguments;
+            // @ts-ignore
+            this.debounceTimer = setTimeout(() => {
+                fn.call(this, args);
+            }, this.debounceGapTime);
+        })();
+    }
+}

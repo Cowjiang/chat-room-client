@@ -20,3 +20,18 @@ export interface SearchUserParams {
     pageIndex: number
     pageSize: number
 }
+
+export interface UpdateUserSettingsParams {
+    primaryColor?: string
+    backgroundColor?: string
+    chatTop?: string
+    publicStatus?: string
+    notifyStatus?: string
+    volume?: string
+    messageNotify?: string
+}
+
+export interface UpdateUserProfileParams {
+    field: string,
+    value: any
+}

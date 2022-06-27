@@ -1,19 +1,21 @@
 import {defineStore} from 'pinia'
 import {formatTime} from '@/common/utils'
-import {NavItemList, ChatInfo, ChatMessageHistory, FriendInfo} from '@/store/types'
+import {NavItemList, ChatInfo, ChatMessageHistory, FriendInfo, UserSettings} from '@/store/types'
 
 export const useStore = defineStore({
     id: 'store',
     state: () => ({
+        $socket: null as any, //Socket对象
         userInfo: '', //当前登录的用户信息
         backgroundColor: '#6d7888', //个性化背景颜色
         primaryColor: '#66c', //个性化主题颜色
+        userSetting: {} as any, //当前用户的个性化设置
         navItemList: [] as NavItemList[], //导航栏项目列表
         currentNavItemIndex: 0, //当前导航栏显示的项目的序号
         chatList: [] as ChatInfo[], //消息列表
         chatMessageHistory: new Map() as Map<string, ChatMessageHistory>, //聊天消息记录缓存
         friendList: [] as FriendInfo[], //好友列表
-        $socket: null as any, //Socket对象
+        validateList: [] as any, //验证消息列表
     }),
     getters: {
         //获取用户信息
@@ -23,8 +25,26 @@ export const useStore = defineStore({
             chat.time = formatTime(chat.time, false)
             return chat
         }),
+        //获取用户设置
+        getUserSetting: state => state.userSetting,
     },
     actions: {
+        /**
+         * 存储更新的userInfo
+         * @param userInfo 更新的userInfo
+         */
+        updateUserInfo(userInfo: any) {
+            this.userInfo = JSON.stringify(userInfo)
+            sessionStorage.setItem('userInfo', this.userInfo)
+        },
+        /**
+         * 存储更新的用户个性化设置
+         * @param key 设置项键名
+         * @param value 设置项的值
+         */
+        updateUserSetting(key: string, value: any) {
+            this.userSetting[key] = value
+        },
         /**
          * 存储聊天列表
          * @param chatList 更新的聊天列表
@@ -60,6 +80,22 @@ export const useStore = defineStore({
         },
         setFriendList(friendList: any[]) {
 
+        },
+        /**
+         * 存储用户个性化设置
+         * @param userSettings 用户个性化设置
+         */
+        setUserSettings(userSettings: UserSettings) {
+            if (userSettings.primaryColor) this.primaryColor = userSettings.primaryColor
+            if (userSettings.backgroundColor) this.backgroundColor = userSettings.backgroundColor
+            this.userSetting = userSettings
+        },
+        /**
+         * 存储用户验证消息列表
+         * @param validateList 验证消息列表
+         */
+        setValidateList(validateList: any[]) {
+            this.validateList = validateList
         }
     }
 })

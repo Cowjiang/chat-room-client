@@ -10,12 +10,28 @@
         <setting-frame v-else-if="currentNavItemIndex === navItemList.findIndex(item => item.name === 'setting')"/>
       </div>
     </div>
-    <loading v-model="loadingStatus" enterDuration="0s"/>
+    <loading v-model="loadingStatus" enterDuration="0s" z-index="2300"/>
+    <v-dialog v-model="loadError" persistent>
+      <v-card
+        width="400"
+        rounded="lg">
+        <v-card-header>
+          <v-card-header-text>
+            <v-card-title>数据加载失败，请重新加载</v-card-title>
+            <v-card-subtitle>网络异常，请检查你的网络</v-card-subtitle>
+          </v-card-header-text>
+        </v-card-header>
+        <v-card-text></v-card-text>
+        <v-card-actions>
+          <v-btn color="error" :block="true" @click="reloadApp">重新加载</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-    import {onMounted, ref, watch} from 'vue'
+    import {onMounted, ref} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {useRoute, useRouter} from 'vue-router'
@@ -25,8 +41,10 @@
     import SettingFrame from '@/components/frames/setting-frame'
     import Loading from '@/components/loading'
     import SearchPopup from '@/components/popup-dialogs/search-popup'
-    import {getChatListApi} from '@/service/api/chats'
     import {connectSocket} from '@/service/socket'
+    import {getChatListApi} from '@/service/api/chats'
+    import {getUserSettingsApi} from '@/service/api/user'
+    import {getValidateListApi} from '@/service/api/validate'
 
     interface NavItemClickEvent {
         index: number,
@@ -37,8 +55,9 @@
     const {backgroundColor, navItemList, currentNavItemIndex} = storeToRefs(store)
     const router = useRouter()
     const route = useRoute()
-    const loadingStatus = ref(true)
-    const showSearchPopup = ref(false)
+    const loadingStatus = ref(true) //数据加载状态
+    const loadError = ref(false) //数据是否加载失败
+    const showSearchPopup = ref(false) //是否显示全局搜索弹窗
 
     // 导航栏点击事件
     const handleNavItemClick = (e: NavItemClickEvent) => {
@@ -54,8 +73,8 @@
     }
 
     // 获取聊天列表
-    const getChatList = async () => {
-        await getChatListApi().then((res: AxiosResponse) => {
+    const getChatList = () => new Promise((resolve, reject) => {
+        getChatListApi().then((res: AxiosResponse) => {
             store.setChatList([
                 {
                     id: '61be0f1ee7fd6865cbcd74d0',
@@ -74,22 +93,47 @@
                     time: '2021-12-20T10:21:45.430+00:00'
                 }
             ])
+            resolve(res)
         }).catch((err: AxiosError) => {
-            console.error(err)
+            reject(err)
         })
-    }
-
-    Promise.all([getChatList()]).then(() => {
-        loadingStatus.value = false
     })
 
-    // watch(
-    //     () => route.params.navItem,
-    //     async navItem => {
-    //         const index = navItemList.value.findIndex(item => item.name == navItem)
-    //         store.currentNavItemIndex = index === -1 ? 0 : index
-    //     }
-    // )
+    // 获取用户设置
+    const getUserSettings = () => new Promise((resolve, reject) => {
+        getUserSettingsApi().then((res: AxiosResponse) => {
+            if (res.data.setting) {
+                store.setUserSettings(res.data.setting)
+            }
+            resolve(res)
+        }).catch((err: AxiosError) => {
+            reject(err)
+        })
+    })
+
+    // 获取用户验证消息列表
+    const getValidateList = () => new Promise((resolve, reject) => {
+        getValidateListApi().then((res: AxiosResponse) => {
+            if (res.data.validateMessageList) {
+                store.setValidateList(res.data.validateMessageList)
+            }
+            resolve(res)
+        }).catch((err: AxiosError) => {
+            reject(err)
+        })
+    })
+
+    Promise.all([getChatList(), getUserSettings(), getValidateList()]).then(() => {
+        loadingStatus.value = false
+    }).catch((err) => {
+        console.error(err)
+        setTimeout(() => {
+            loadError.value = true
+        }, 500)
+    })
+
+    // 重新加载应用
+    const reloadApp = () => router.go(0)
 
     onMounted(() => {
         connectSocket()
@@ -132,10 +176,10 @@
 
     .content-wrapper {
       background-color: $background-color;
-
-      .content-container {
-
-      }
     }
+  }
+
+  ::v-deep(.v-overlay) {
+    z-index: 99999 !important;
   }
 </style>

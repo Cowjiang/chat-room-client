@@ -3,24 +3,21 @@ import {useStore} from '@/store'
 import ClientSocketIO from 'socket.io-client'
 
 //连接socket
-export const connectSocket = () => {
+export const connectSocket = (): void => {
     const store = useStore()
     store.$socket = ClientSocketIO("http://172.17.144.172:8888/", {
         transports: ['websocket']
     })
     store.$socket.on('connect', () => {
-        console.log('socket-connect')
+        console.log('[Socket]: Connected')
     })
     store.$socket.on('message',(data: any) =>{
-        console.log(data)
-    })
-    store.$socket.on('success',(data: any) =>{
-        console.log(data)
+        console.log('[Socket]: ', data)
     })
 }
 
 //断开socket
-export const disconnectSocket = () => {
+export const disconnectSocket = (): void => {
     const store = useStore()
     if (store.$socket) {
         store.$socket.emit('leave')
@@ -33,7 +30,7 @@ export const disconnectSocket = () => {
  * @param event socket的事件名称
  * @param data 数据
  */
-export const sendSocketMessage = (event: String, data?: any) => new Promise((resolve, reject) => {
+export const sendSocketMessage = (event: String, data?: any): Promise<any> => new Promise((resolve, reject) => {
     const store = useStore()
     if (store.$socket) {
         store.$socket.emit(event, data ?? null)

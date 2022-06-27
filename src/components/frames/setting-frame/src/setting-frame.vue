@@ -36,7 +36,9 @@
             ]"
             v-bind="props"
             @click="handleNavItemClick([group.id, item.id])">
-            <i class="fa-solid fa-users mr-3 text-grey-lighten-1"/>
+            <i
+              class="fa-solid mr-3 text-grey-lighten-1"
+              :class="item.icon"/>
             <span>{{ item.name }}</span>
             <svg
               v-show="currentNavItemIndex[0] === group.id && currentNavItemIndex[1] === item.id"
@@ -63,25 +65,49 @@
           :class="isHovering ? 'nav-item__hover' : ''"
           v-bind="props"
           @click="logout">
-          <i class="fa-solid fa-users mr-3"/>
+          <i class="fa-solid fa-arrow-right-from-bracket mr-3"/>
           <span>退出登录</span>
         </div>
       </v-hover>
       <div class="bottom-mask"></div>
     </div>
-    <div class="setting-main-container h-100 flex-grow-1">
-
+    <div class="setting-wrapper pa-10 mt-10 d-flex justify-center flex-grow-1">
+      <div class="setting-container h-100 d-flex flex-column flex-shrink-0">
+        <div class="setting-header mb-6 d-flex flex-column">
+          <span class="text-h5 text-grey-darken-3 font-weight-bold">
+            {{ currentSettingInfo.name }}
+          </span>
+          <span class="mt-4 text-subtitle-2 text-grey-darken-2">
+            {{ currentSettingInfo.dsc }}
+          </span>
+          <v-divider class="mt-6" color="#e5e5ea"/>
+        </div>
+        <account-setting v-show="currentNavItemIndex[0] === 0 && currentNavItemIndex[1] === 0"/>
+        <private-setting v-show="currentNavItemIndex[0] === 0 && currentNavItemIndex[1] === 1"/>
+        <chat-setting v-show="currentNavItemIndex[0] === 0 && currentNavItemIndex[1] === 2"/>
+        <appearance-setting v-show="currentNavItemIndex[0] === 1 && currentNavItemIndex[1] === 0"/>
+        <notify-setting v-show="currentNavItemIndex[0] === 1 && currentNavItemIndex[1] === 1"/>
+        <keymap-setting v-show="currentNavItemIndex[0] === 1 && currentNavItemIndex[1] === 2"/>
+        <developer-setting v-show="currentNavItemIndex[0] === 2 && currentNavItemIndex[1] === 0"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-    import {ref} from 'vue'
+    import {computed, ref} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {useRouter} from 'vue-router'
     import {settingList} from '@/components/frames/setting-frame'
     import {clearUserInfo} from '@/common/utils'
+    import AccountSetting from '@/components/frames/setting-frame/src/src/account-setting.vue'
+    import PrivateSetting from '@/components/frames/setting-frame/src/src/private-setting.vue'
+    import ChatSetting from '@/components/frames/setting-frame/src/src/chat-setting.vue'
+    import AppearanceSetting from '@/components/frames/setting-frame/src/src/appearance-setting.vue'
+    import NotifySetting from '@/components/frames/setting-frame/src/src/notify-setting.vue'
+    import KeymapSetting from '@/components/frames/setting-frame/src/src/keymap-setting.vue'
+    import DeveloperSetting from '@/components/frames/setting-frame/src/src/developer-setting.vue'
 
     const store = useStore()
     const {primaryColor, getUserInfo} = storeToRefs(store)
@@ -96,8 +122,19 @@
         currentNavItemIndex.value = index
     }
 
+    //当前的设置项
+    const currentSettingInfo = computed((): any => {
+        let settingItem: any
+        settingList.find(group => {
+            if (group.id === currentNavItemIndex.value[0]) {
+                settingItem = group.groupItems.find(item => item.id === currentNavItemIndex.value[1])
+            }
+        })
+        return settingItem
+    })
+
     // 退出登录
-    const logout = () => {
+    const logout = (): void => {
         clearUserInfo()
         router.replace({name: 'login'})
     }
@@ -147,6 +184,11 @@
         box-sizing: border-box;
         border-radius: 24px 0 0 24px;
 
+        .fa-solid {
+          width: 18px;
+          text-align: center;
+        }
+
         span {
           overflow: hidden;
           text-overflow: ellipsis;
@@ -186,7 +228,15 @@
     }
   }
 
-  .setting-main-container {
+  .setting-wrapper {
+    @include scrollbar-default();
+    overflow-y: scroll;
 
+    .setting-container {
+      @include scrollbar-default();
+      width: 50vw;
+      min-width: 500px;
+      max-width: 700px;
+    }
   }
 </style>

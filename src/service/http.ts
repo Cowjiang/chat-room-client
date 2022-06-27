@@ -35,13 +35,10 @@ instance.interceptors.response.use(
             sessionStorage.setItem('userInfo', JSON.stringify(response.data.data.userInfo))
             store.userInfo = JSON.stringify(response.data.data.userInfo)
         }
-        console.log(response)
         return response.data
     },
     error => {
-        console.error(error)
-        return new Promise(() => {
-        })
+        return Promise.reject(error)
     }
 )
 

@@ -1,5 +1,12 @@
 import http from '@/service/http'
-import {GetUserProfileParams, LoginParams, RegisterParams, SearchUserParams} from './types'
+import {
+    GetUserProfileParams,
+    LoginParams,
+    RegisterParams,
+    SearchUserParams,
+    UpdateUserProfileParams,
+    UpdateUserSettingsParams
+} from './types'
 
 //登录
 export const loginApi = (params: LoginParams) => http.post('/user/login', params)
@@ -13,25 +20,11 @@ export const getUserProfileApi = (params: GetUserProfileParams) => http.get(`/us
 //搜索用户
 export const searchUserApi = (params: SearchUserParams) => http.post('/user/preFetchUser', params)
 
-//
-// //获取群聊列表
-// export const getMyGroupList = () => http.get(`/group/finAll`);
-//
-// //修改好友的备注名
-// export const updateFriendNickname = (userId, friendId, friendBeiZhuName) => http.post('/user/updateFriendBeiZhu', {
-//     userId,
-//     friendId,
-//     friendBeiZhuName
-// });
-//
-// //将好友添加到分组
-// export const addFriendToCustomGroup = (userId, fenZuName) => http.post('/user/addFenZu', {
-//     userId,
-//     fenZuName
-// });
-//
-// //阿里云上传文件（废弃）
-// export const uploadFileApi = (file) => http.post('/system/upload', {file}, {headers: {'Content-Type': 'multipart/form-data'}});
-//
-// //获取好友聊天记录
-// export const getSingleChatHistory = (roomId, pageIndex, pageSize) => http.get(`/singleMessage/getRecentSingleMessages?roomId=${roomId}&pageIndex=${pageIndex}&pageSize=${pageSize}`);
+//获取用户个性化设置
+export const getUserSettingsApi = () => http.get('/user/setting/')
+
+//更新用户个性化设置
+export const updateUserSettingsApi = (params: UpdateUserSettingsParams) => http.put('/user/setting/update', params)
+
+//更新用户个人资料
+export const updateUserProfileApi = (params: UpdateUserProfileParams) => http.post('/user/updateUserInfo', params)
