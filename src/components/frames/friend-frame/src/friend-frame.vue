@@ -38,7 +38,7 @@
       </v-btn>
     </div>
     <div class="content-container w-100 pa-5 d-flex flex-column flex-grow-1">
-      <v-list>
+      <v-list v-if="currentFriendType === 0 || currentFriendType === 1">
         <v-list-subheader inset>
           全部 {{ currentFriendAmount }}
         </v-list-subheader>
@@ -102,8 +102,9 @@
           </v-list-item-avatar>
         </v-list-item>
       </v-list>
+      <validate-list v-else-if="currentFriendType === 2"/>
       <div
-        v-if="!currentFriendList.length"
+        v-if="!currentFriendList.length && currentFriendType !== 2"
         class="w-100 h-75 d-flex flex-column align-center justify-center text-grey-lighten-1">
         <div class="text-h1 mb-6 font-weight-medium">
           ╮(╯_╰)╭
@@ -130,6 +131,7 @@
     import SearchPopup from '@/components/popup-dialogs/search-popup'
     import {getFriendsListApi} from '@/service/api/firends'
     import {FriendInfo} from '@/store/types'
+    import ValidateList from '@/components/frames/friend-frame/src/src/validate-list.vue'
 
     interface Props {
         friendType: FriendType //好友类型
@@ -161,48 +163,59 @@
      * @param friendType 要获取的好友列表类型
      */
     const getFriendList = (friendType?: FriendType) => new Promise((resolve, reject) => {
-        getFriendsListApi().then((res: AxiosResponse) => {
-            if (friendType === 0) {
-                res.data.myFriendsList = [
-                    {
-                        createDate: '2021-12-18T16:41:26.640+00:00',
-                        nickname: '阿尔维斯3132',
-                        photo: 'face/face5.jpg',
-                        signature: '',
-                        id: '61be1225764ede0e9b7c9a30',
-                        level: 1,
-                        roomId: '61be0e6ce7fd6865cbcd74ca-61be1225764ede0e9b7c9a30'
-                    },
-                    {
-                        createDate: '2021-12-18T16:41:26.640+00:00',
-                        nickname: '阿尔维斯3133',
-                        photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
-                        signature: '',
-                        id: '61be1225764ede0e9b7c9a31',
-                        level: 1,
-                        roomId: '61be0e6ce7fd6865cbcd74ca-61be1225764ede0e9b7c9a32'
-                    }
-                ]
-                store.setFriendList(res.data.myFriendsList ?? [])
-            } else if (friendType === 1) {
-                res.data.myFriendsList = [
-                    {
-                        createDate: '2021-12-18T16:41:26.640+00:00',
-                        nickname: '保利尼奥保利尼奥保利尼奥3151',
-                        photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
-                        signature: '',
-                        id: '61be1225764ede0e9b7c9a30',
-                        level: 1,
-                        roomId: '61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7'
-                    }
-                ]
-            }
-            currentFriendList.value = res.data.myFriendsList
-            currentFriendAmount.value = res.data.myFriendsList.length
-            resolve(res)
-        }).catch((err: AxiosError) => {
-            reject(err)
-        })
+        if (friendType === 0 || friendType === 1) {
+            getFriendsListApi().then((res: AxiosResponse) => {
+                if (friendType === 0) {
+                    res.data.myFriendsList = [
+                        {
+                            createDate: '2021-12-18T16:41:26.640+00:00',
+                            nickname: '阿尔维斯3132',
+                            photo: 'face/face5.jpg',
+                            signature: '',
+                            id: '61be1225764ede0e9b7c9a30',
+                            level: 1,
+                            roomId: '61be0e6ce7fd6865cbcd74ca-61be1225764ede0e9b7c9a30'
+                        },
+                        {
+                            createDate: '2021-12-18T16:41:26.640+00:00',
+                            nickname: '阿尔维斯3133',
+                            photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
+                            signature: '',
+                            id: '61be1225764ede0e9b7c9a31',
+                            level: 1,
+                            roomId: '61be0e6ce7fd6865cbcd74ca-61be1225764ede0e9b7c9a32'
+                        }
+                    ]
+                    store.setFriendList(res.data.myFriendsList ?? [])
+                } else if (friendType === 1) {
+                    res.data.myFriendsList = [
+                        {
+                            createDate: '2021-12-18T16:41:26.640+00:00',
+                            nickname: '保利尼奥保利尼奥保利尼奥3151',
+                            photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
+                            signature: '',
+                            id: '61be1225764ede0e9b7c9a30',
+                            level: 1,
+                            roomId: '61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7'
+                        }
+                    ]
+                }
+                currentFriendList.value = res.data.myFriendsList
+                currentFriendAmount.value = res.data.myFriendsList.length
+                resolve(res)
+            }).catch((err: AxiosError) => {
+                reject(err)
+            })
+        }
+        else if (friendType === 2) {
+            resolve(true)
+        }
+        else {
+            store.setFriendList([])
+            currentFriendList.value = []
+            currentFriendAmount.value = 0
+            resolve(true)
+        }
     })
 
     /**

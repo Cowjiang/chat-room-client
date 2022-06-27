@@ -45,3 +45,18 @@ export interface UserSettings {
     userId?: string | null
     volume?: string | null
 }
+
+export interface ValidateInfo {
+    id: string
+    roomId: string
+    senderId: string
+    senderName: string
+    senderNickname: string
+    senderAvatar: string
+    receiverId: string
+    time: string
+    additionMessage: string | null
+    status: number
+    validateType: number
+    groupInfo: null
+}

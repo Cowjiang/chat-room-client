@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {formatTime} from '@/common/utils'
-import {NavItemList, ChatInfo, ChatMessageHistory, FriendInfo, UserSettings} from '@/store/types'
+import {NavItemList, ChatInfo, ChatMessageHistory, FriendInfo, UserSettings, ValidateInfo} from '@/store/types'
 
 export const useStore = defineStore({
     id: 'store',
@@ -15,7 +15,7 @@ export const useStore = defineStore({
         chatList: [] as ChatInfo[], //消息列表
         chatMessageHistory: new Map() as Map<string, ChatMessageHistory>, //聊天消息记录缓存
         friendList: [] as FriendInfo[], //好友列表
-        validateList: [] as any, //验证消息列表
+        validateList: [] as ValidateInfo[], //验证消息列表
     }),
     getters: {
         //获取用户信息
@@ -27,6 +27,11 @@ export const useStore = defineStore({
         }),
         //获取用户设置
         getUserSetting: state => state.userSetting,
+        //获取验证消息列表
+        getValidateList: state => state.validateList.map((validate: ValidateInfo) => {
+            validate.time = formatTime(validate.time, true)
+            return validate
+        }),
     },
     actions: {
         /**

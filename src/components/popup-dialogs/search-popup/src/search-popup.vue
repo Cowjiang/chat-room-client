@@ -105,11 +105,14 @@
     import {defineProps, withDefaults, defineEmits, ref, watch} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
+    import {Utils} from '@/common/utils'
     import UserProfilePopup from '@/components/popup-dialogs/user-profile-popup'
     import EmptyResult from '@/components/popup-dialogs/search-popup/src/empty-result.vue'
     import ValidateMessagePopup from '@/components/popup-dialogs/validate-message-popup'
     import {UserProfilePopupProps} from '@/components/popup-dialogs/user-profile-popup/src/user-profile-popup.vue'
-    import {ValidateMessagePopupProps} from '@/components/popup-dialogs/validate-message-popup/src/validate-message-popup.vue'
+    import {
+        ValidateMessagePopupProps
+    } from '@/components/popup-dialogs/validate-message-popup/src/validate-message-popup.vue'
     import {searchUserApi} from '@/service/api/user'
     import {searchGroupApi} from '@/service/api/groups'
 
@@ -129,7 +132,7 @@
         // eslint-disable-next-line no-unused-vars
         (e: 'update:modelValue', show: boolean): void
     }>()
-
+    const utils = new Utils()
     const showDialog = ref(props.value) //是否显示弹窗
     const searchTypeIndex = ref(props.type) //当前搜索的类型
     const store = useStore()
@@ -244,7 +247,9 @@
         () => searchTypeIndex.value,
         () => {
             if (searchValue.value !== '') {
-                searchResult(1)
+                utils.debounce(() => {
+                    searchResult(1)
+                }, 300)
             }
         }
     )

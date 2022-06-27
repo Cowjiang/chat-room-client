@@ -39,10 +39,10 @@
               rounded="default"
               density="compact"
               min-width="150">
-              <v-list-item value="0">
+              <v-list-item v-if="userProfile.myFriend" value="0">
                 修改备注
               </v-list-item>
-              <v-list-item class="text-red" value="1">
+              <v-list-item v-if="userProfile.myFriend" class="text-red" value="1">
                 删除好友
               </v-list-item>
               <v-list-item class="text-red" value="2">
@@ -60,11 +60,21 @@
       </div>
       <div class="w-100 d-flex">
         <v-btn
+          v-if="userProfile.myFriend"
           class="bg-grey-lighten-4 text-grey-darken-2"
           width="84"
           :flat="true"
           :disabled="!userProfile.nickname">
           私信
+        </v-btn>
+        <v-btn
+          v-else
+          color="success"
+          width="84"
+          :flat="true"
+          :disabled="!userProfile.nickname"
+          @click="handleAddFriend(userProfile)">
+          加好友
         </v-btn>
         <v-btn
           :flat="true"
@@ -76,6 +86,11 @@
         </v-btn>
       </div>
     </div>
+    <validate-message-popup
+      v-model="validateMessagePopupProps.value"
+      :type="validateMessagePopupProps.type"
+      :receiverId="validateMessagePopupProps.receiverId"
+      :groupId="validateMessagePopupProps.groupId"/>
   </v-dialog>
 </template>
 
@@ -85,6 +100,8 @@
     import {storeToRefs} from 'pinia'
     import {getUserProfileApi} from '@/service/api/user'
     import {AxiosResponse} from 'axios'
+    import ValidateMessagePopup from '@/components/popup-dialogs/validate-message-popup'
+    import {ValidateMessagePopupProps} from '@/components/popup-dialogs/validate-message-popup/src/validate-message-popup.vue'
 
     export interface UserProfilePopupProps {
         value: boolean //控制弹窗显示隐藏
@@ -105,6 +122,12 @@
     const store = useStore()
     const {primaryColor} = storeToRefs(store)
     const userProfile = ref({}) //用户个人资料
+    const validateMessagePopupProps = ref<ValidateMessagePopupProps>({
+        value: false,
+        type: 0,
+        receiverId: '',
+        groupId: ''
+    }) //验证消息弹窗组件的属性
 
     // 获取用户个人资料
     const getUserProfile = async () => {
@@ -112,6 +135,17 @@
             uid: props.uid
         })
         userProfile.value = res.data.user ? res.data.user : {}
+    }
+
+    /**
+     * 添加好友事件
+     * @param userInfo 用户信息
+     */
+    const handleAddFriend = (userInfo: any) => {
+        validateMessagePopupProps.value.type = 0
+        validateMessagePopupProps.value.receiverId = userInfo.uid
+        validateMessagePopupProps.value.groupId = null
+        validateMessagePopupProps.value.value = true
     }
 
     // 关闭弹窗事件
