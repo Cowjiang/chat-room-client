@@ -11,8 +11,21 @@ export const connectSocket = (): void => {
     store.$socket.on('connect', () => {
         console.log('[Socket]: Connected')
     })
-    store.$socket.on('message',(data: any) =>{
+    store.$socket.on('message', (data: any) => {
         console.log('[Socket]: ', data)
+    })
+    store.$socket.on('receiveMessage', (msg: any) => {
+        console.log('[Socket-receiveMessage]: ', msg)
+        const roomId = msg.roomId;
+        const store = useStore()
+        store.chatList.map(item => {
+            if (item.id === roomId) {
+                // @ts-ignore
+                store.chatList.unshift(store.chatList.pop())
+                // @ts-ignore
+                item.lastMessage = msg.messageType === 'image' ? '[图片]' : msg.message
+            }
+        })
     })
 }
 

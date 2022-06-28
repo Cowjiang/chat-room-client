@@ -12,3 +12,7 @@ export interface CreateGroupParams {
     holderUserId: string
     img: string
 }
+
+export interface GetGroupListByUserNameParams {
+    username: string
+}

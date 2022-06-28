@@ -106,7 +106,8 @@
         :friend-type="currentFriendListType"/>
       <chat-frame
         v-else
-        :chat-info="getChatList[currentNavItemIndex]"/>
+        :chat-info="currentChatInfo"
+        @send="handleMessageSent"/>
     </div>
   </div>
 </template>
@@ -125,6 +126,7 @@
     const route = useRoute()
     const currentNavItemIndex = ref(-1) //当前左侧列表导航栏聚焦项的序号
     const currentFriendListType = ref<FriendType>(0) //好友列表的类型
+    const currentChatInfo = ref({}) //当前聊天信息
 
     /**
      * 左侧菜单点击事件
@@ -148,7 +150,25 @@
                     roomId: getChatList.value[index].id
                 }
             })
+            currentChatInfo.value = getChatList.value[currentNavItemIndex.value]
         }
+    }
+
+    /**
+     * 发送消息的回调事件
+     * @param message 消息内容
+     */
+    const handleMessageSent = (message: any) => {
+        store.chatList.map(item => {
+            if (item.id === message.roomId) {
+                // @ts-ignore
+                store.chatList.unshift(store.chatList.pop())
+                item.time = String(new Date())
+                // @ts-ignore
+                item.lastMessage = message.messageType === 'image' ? '[图片]' : message.message
+                currentNavItemIndex.value = 0
+            }
+        })
     }
 
     watch(

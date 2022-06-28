@@ -60,3 +60,16 @@ export interface ValidateInfo {
     validateType: number
     groupInfo: null
 }
+
+export interface MyGroupInfo {
+    id: string
+    userId: string
+    username: string
+    manager: number
+    holder: number
+    card: string
+    time: string
+    groupInfo?: Array<any>
+    groupId: string
+    userInfo?: null
+}

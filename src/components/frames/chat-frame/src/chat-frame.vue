@@ -26,6 +26,25 @@
           size="x-small"
           :icon="true">
           <i class="fa-solid fa-ellipsis"></i>
+          <v-menu activator="parent" location="start">
+            <v-list
+              class="text-subtitle-2"
+              elevation="3"
+              rounded="lg"
+              density="compact"
+              min-width="150"
+              @update:selected="handleChatMenuClick">
+              <v-list-item :value="0">
+                置顶聊天
+              </v-list-item>
+              <v-list-item :value="1">
+                聊天信息
+              </v-list-item>
+              <v-list-item class="text-red" :value="2">
+                屏蔽该用户
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-btn>
       </div>
     </div>
@@ -129,7 +148,7 @@
 </template>
 
 <script lang="ts" setup>
-    import {nextTick, ref, watch, defineProps, withDefaults, onMounted} from 'vue'
+    import {nextTick, ref, watch, defineProps, withDefaults, onMounted, defineEmits} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import axios, {AxiosError, AxiosResponse} from 'axios'
@@ -137,10 +156,13 @@
     import {formatTime, computeDatetime, removeDuplicateObj} from '@/common/utils'
     import {getSingleChatHistoryApi} from '@/service/api/chats'
     import {ChatInfo} from '@/store/types'
-    import {sendSocketMessage} from "@/service/socket";
+    import {sendSocketMessage} from '@/service/socket'
+    import {updateUserSettingsApi} from '@/service/api/user'
+
+    const emit = defineEmits(['send']) //消息发送事件
 
     const store = useStore()
-    const {getUserInfo, primaryColor} = storeToRefs(store)
+    const {getUserInfo, primaryColor, getUserSetting} = storeToRefs(store)
 
     interface Props {
         chatInfo: ChatInfo
@@ -247,6 +269,7 @@
             sendSocketMessage('sendNewMessage', message)
             chatMessageHistory.value.push(message)
             inputValue.value = ''
+            emit('send', message)
             nextTick(() => {
                 if (chatMessageArea.value) {
                     chatMessageArea.value.scrollTop = 9999909
@@ -293,6 +316,7 @@
                 }
                 sendSocketMessage('sendNewMessage', message)
                 chatMessageHistory.value.push(message)
+                emit('send', message)
                 setTimeout(() => {
                     if (chatMessageArea.value) {
                         chatMessageArea.value.scrollTop = 9999909
@@ -302,6 +326,29 @@
         }).catch(error => {
             console.error(error);
         })
+    }
+
+    /**
+     * 验证消息更多操作菜单点击事件
+     * @param e 当前点击的菜单项序号数组
+     */
+    const handleChatMenuClick = (e: Array<number>) => {
+        if (e[0] === 0) {
+            const topChatList = JSON.parse(getUserSetting.value.chatTop ?? '[]')
+            const newTopChatList = removeDuplicateObj([[{
+                id: props.chatInfo.id,
+                title: props.chatInfo.nickname,
+                photo: props.chatInfo.avatarUrl,
+                chatType: 0
+            }], ...topChatList])
+            updateUserSettingsApi({
+                chatTop: JSON.stringify(newTopChatList)
+            }).then(() => {
+                store.updateUserSetting('chatTop', newTopChatList)
+            }).catch(err => {
+                console.error(err)
+            })
+        }
     }
 
     // 重置聊天组件数据

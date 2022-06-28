@@ -247,9 +247,7 @@
         () => searchTypeIndex.value,
         () => {
             if (searchValue.value !== '') {
-                utils.debounce(() => {
-                    searchResult(1)
-                }, 300)
+                searchResult(1)
             }
         }
     )
@@ -259,7 +257,9 @@
         () => searchValue.value,
         () => {
             reset()
-            searchResult(1)
+            utils.debounce(() => {
+                searchResult(1)
+            }, 300)
         }
     )
 </script>

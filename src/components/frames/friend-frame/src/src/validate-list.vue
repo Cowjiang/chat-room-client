@@ -79,10 +79,10 @@
 </template>
 
 <script lang="ts" setup>
-    import {ref} from 'vue'
+    import {ref, onMounted} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
-    import {AxiosResponse} from 'axios'
+    import {AxiosError, AxiosResponse} from 'axios'
     import UserProfilePopup from '@/components/popup-dialogs/user-profile-popup'
     import {ValidateInfo} from '@/store/types'
     import {sendSocketMessage} from '@/service/socket'
@@ -120,6 +120,7 @@
             handleValidateClick(validate)
         } else if (e[0] === 1 || e[0] === 2) {
             const validateMessage = {
+                id: validate.id,
                 roomId: validate.roomId,
                 senderId: validate.senderId,
                 senderName: validate.senderName,
@@ -131,7 +132,7 @@
                 status: e[0] === 1 ? 1 : 2,
                 validateType: validate.validateType,
             }
-            sendSocketMessage('sendValidateMessage', validateMessage).then(() => {
+            sendSocketMessage(e[0] === 1 ? 'sendAgreeFriendValidate' : 'sendDisAgreeFriendValidate', validateMessage).then(() => {
                 getValidateListApi().then((res: AxiosResponse) => {
                     if (res.data.validateMessageList) {
                         store.setValidateList(res.data.validateMessageList)
@@ -144,6 +145,21 @@
             })
         }
     }
+
+    // 获取用户验证消息列表
+    const getMyValidateList = () => {
+        getValidateListApi().then((res: AxiosResponse) => {
+            if (res.data.validateMessageList) {
+                store.setValidateList(res.data.validateMessageList)
+            }
+        }).catch((err: AxiosError) => {
+            console.error(err)
+        })
+    }
+
+    onMounted(() => {
+        getMyValidateList()
+    })
 </script>
 
 <style lang="scss" scoped>

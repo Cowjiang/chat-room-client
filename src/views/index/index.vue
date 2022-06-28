@@ -9,6 +9,7 @@
         <home-frame v-if="currentNavItemIndex === 0"/>
         <group-frame v-else-if="currentNavItemIndex === 1"/>
         <setting-frame v-else-if="currentNavItemIndex === navItemList.findIndex(item => item.name === 'setting')"/>
+        <top-chat-frame v-else/>
       </div>
     </div>
     <loading v-model="loadingStatus" enterDuration="0s" z-index="2300"/>
@@ -40,13 +41,13 @@
     import NavigationBar from '@/components/navigation-bar'
     import HomeFrame from '@/components/frames/home-frame'
     import GroupFrame from '@/components/frames/group-frame'
+    import TopChatFrame from '@/components/frames/top-chat-frame/src/top-chat-frame'
     import SettingFrame from '@/components/frames/setting-frame'
     import Loading from '@/components/loading'
     import SearchPopup from '@/components/popup-dialogs/search-popup'
     import {connectSocket} from '@/service/socket'
     import {getChatListApi} from '@/service/api/chats'
     import {getUserSettingsApi} from '@/service/api/user'
-    import {getValidateListApi} from '@/service/api/validate'
 
     interface NavItemClickEvent {
         index: number,
@@ -54,7 +55,7 @@
     }
 
     const store = useStore()
-    const {backgroundColor, navItemList, currentNavItemIndex} = storeToRefs(store)
+    const {backgroundColor, navItemList, currentNavItemIndex, getChatList} = storeToRefs(store)
     const router = useRouter()
     const route = useRoute()
     const loadingStatus = ref(true) //数据加载状态
@@ -75,13 +76,13 @@
     }
 
     // 获取聊天列表
-    const getChatList = () => new Promise((resolve, reject) => {
+    const getChatListPromise = () => new Promise((resolve, reject) => {
         getChatListApi().then((res: AxiosResponse) => {
             store.setChatList([
                 {
-                    id: '61be0f1ee7fd6865cbcd74d0',
-                    photo: 'face/face13.jpg',
-                    nickname: '保利尼奥3150',
+                    id: '62bac823e8dfe11e4963b09b',
+                    photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
+                    nickname: '南野托斯3267',
                     friendBeiZu: null,
                     lastMessage: '4234',
                     time: '2021-12-20T10:07:44.202+00:00'
@@ -102,7 +103,7 @@
     })
 
     // 获取用户设置
-    const getUserSettings = () => new Promise((resolve, reject) => {
+    const getUserSettingsPromise = () => new Promise((resolve, reject) => {
         getUserSettingsApi().then((res: AxiosResponse) => {
             if (res.data.setting) {
                 store.setUserSettings(res.data.setting)
@@ -113,19 +114,7 @@
         })
     })
 
-    // 获取用户验证消息列表
-    const getValidateList = () => new Promise((resolve, reject) => {
-        getValidateListApi().then((res: AxiosResponse) => {
-            if (res.data.validateMessageList) {
-                store.setValidateList(res.data.validateMessageList)
-            }
-            resolve(res)
-        }).catch((err: AxiosError) => {
-            reject(err)
-        })
-    })
-
-    Promise.all([getChatList(), getUserSettings(), getValidateList()]).then(() => {
+    Promise.all([getChatListPromise(), getUserSettingsPromise()]).then(() => {
         loadingStatus.value = false
     }).catch((err) => {
         console.error(err)

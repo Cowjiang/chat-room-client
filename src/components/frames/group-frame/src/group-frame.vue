@@ -19,8 +19,8 @@
         <div class="chat-list-container">
           <v-hover
             v-slot="{ isHovering, props }"
-            v-for="(chat, index) in getChatList"
-            :key="chat.id">
+            v-for="(group, index) in getMyGroupList"
+            :key="group.id">
             <div
               class="nav-chat-item d-flex align-center position-relative ml-2 pl-2 py-6"
               :class="[
@@ -34,19 +34,19 @@
                 color="grey-lighten-2"
                 size="default">
                 <v-img
-                  :src="chat.avatarUrl"
-                  :alt="chat.nickname"/>
+                  :src="group.groupInfo[0].img"
+                  :alt="group.groupInfo[0].title"/>
               </v-avatar>
               <div class="ml-2 mr-4 w-100 d-flex flex-column overflow-hidden text-no-wrap">
                 <div class="d-flex overflow-hidden">
                   <span class="w-100 mr-2 flex-grow-1 text-subtitle-2 text-grey-darken-3 font-weight-bold">
-                    {{ chat.nickname }}
+                    {{ group.groupInfo[0].title }}
                   </span>
                   <span class="ml-auto flex-shrink-0 text-caption text-grey-lighten-1">
-                    {{ chat.time }}
+                    {{ group.time }}
                   </span>
                 </div>
-                <span class="text-sm-body-2 text-grey-darken-2">{{ chat.lastMessage }}</span>
+                <span class="text-sm-body-2 text-grey-darken-2">{{ group.groupInfo[0].desc }}</span>
               </div>
               <svg
                 v-show="currentNavItemIndex === index"
@@ -65,7 +65,7 @@
               <v-tooltip
                 activator="parent"
                 location="end">
-                {{ chat.nickname }}{{ chat.remarkName ? `（${chat.remarkName}）` : '' }}
+                {{ group.groupInfo[0].title }}
               </v-tooltip>
             </div>
           </v-hover>
@@ -74,22 +74,42 @@
       <div class="bottom-mask"></div>
     </div>
     <div class="home-main-container h-100 flex-grow-1">
-
+      <chat-frame
+        :chat-info="getChatList[currentNavItemIndex]"/>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-    import {ref, watch, withDefaults, defineProps} from 'vue'
+    import {ref, onMounted} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {useRouter} from 'vue-router'
-    import {AxiosError, AxiosResponse} from 'axios'
     import CreateGroupPopup from '@/components/popup-dialogs/create-group-popup'
+    import ChatFrame from '@/components/frames/chat-frame'
+    import {getGroupListByUserNameApi} from '@/service/api/groups'
 
     const store = useStore()
-    const {backgroundColor, primaryColor, getChatList} = storeToRefs(store)
+    const {backgroundColor, primaryColor, getUserInfo, getChatList, getMyGroupList} = storeToRefs(store)
     const router = useRouter()
+    const currentNavItemIndex = ref(0) //当前左侧列表导航栏聚焦项的序号
+
+    // 获取我的群聊列表
+    const getGroupListByUserName = async () => {
+        await getGroupListByUserNameApi({
+            username: getUserInfo.value.username
+        }).then(res => {
+            if (res.data.myGroupList) {
+                store.setMyGroupList(res.data.myGroupList)
+            }
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    onMounted(() => {
+        getGroupListByUserName()
+    })
 </script>
 
 <style lang="scss" scoped>

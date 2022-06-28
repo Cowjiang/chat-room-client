@@ -68,7 +68,7 @@
     import {defineProps, withDefaults, defineEmits, ref} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
-    import {createGroupApi} from '@/service/api/groups'
+    import {createGroupApi, getGroupListByUserNameApi} from '@/service/api/groups'
 
     interface Props {
         value: boolean //控制弹窗显示隐藏
@@ -107,6 +107,15 @@
             img: getUserInfo.value.photo
         }).then(() => {
             createStatus.value = 1
+            getGroupListByUserNameApi({
+                username: getUserInfo.value.username
+            }).then(res => {
+                if (res.data.myGroupList) {
+                    store.setMyGroupList(res.data.myGroupList)
+                }
+            }).catch(err => {
+                console.error(err)
+            })
         }).catch(error => {
             console.error(error)
             createStatus.value = 2
