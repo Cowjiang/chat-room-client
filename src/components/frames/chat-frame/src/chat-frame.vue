@@ -75,7 +75,7 @@
             class="message-container w-100 mb-6"
             v-for="(message, index) in chatMessageHistory"
             :key="message.id"
-            :id="`message${message.id}`">
+            :id="`message${message.messageId}`">
             <!-- 消息发送时间容器 -->
             <div
               class="datetime-container w-100"
@@ -185,65 +185,13 @@
     const getSingleChatHistory = (pageNumber: number) => new Promise((resolve, reject) => {
         getSingleChatHistoryApi({
             roomId: props.chatInfo.id,
-            pageSize: 30,
+            pageSize: 100,
             pageNumber: pageNumber ?? 1
         }).then((res: AxiosResponse) => {
-            res.data.recentMessage = [
-                {
-                    "id": "61c05939eb14ae4845723000",
-                    "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                    "senderId": "61be0e3ae7fd6865cbcd74c7",
-                    "senderName": "123456",
-                    "senderNickname": "保利尼奥3151",
-                    "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                    "time": "2021-12-20T10:21:45.430+00:00",
-                    "fileRawName": null,
-                    "message": "323112",
-                    "messageType": "text",
-                    "isReadUser":
-                        [
-                            "61be0e3ae7fd6865cbcd74c7",
-                            "61be0e6ce7fd6865cbcd74ca"
-                        ]
-                },
-                {
-                    "id": "61c05939eb14ae4845723001",
-                    "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                    "senderId": "61be0e3ae7fd6865cbcd74c7",
-                    "senderName": "123456",
-                    "senderNickname": "保利尼奥3151",
-                    "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                    "time": "2021-12-20T10:21:45.430+00:00",
-                    "fileRawName": null,
-                    "message": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                    "messageType": "image",
-                    "isReadUser":
-                        [
-                            "61be0e3ae7fd6865cbcd74c7",
-                            "61be0e6ce7fd6865cbcd74ca"
-                        ]
-                },
-                {
-                    "id": "61c05939eb14ae4845723002",
-                    "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                    "senderId": "62a78c90ac624970c9a7c229",
-                    "senderName": "13711401096",
-                    "senderNickname": "曼珠机奇3217",
-                    "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                    "time": "2022-02-20T10:21:45.430+00:00",
-                    "fileRawName": null,
-                    "message": "曼珠机奇曼珠机奇曼珠机奇曼珠机奇曼珠机奇曼珠机奇曼珠机奇",
-                    "messageType": "text",
-                    "isReadUser":
-                        [
-                            "61be0e3ae7fd6865cbcd74c7",
-                            "61be0e6ce7fd6865cbcd74ca"
-                        ]
-                }
-            ]
-            const msgList = res.data.recentMessage ?? []
+            const msgList = (res.data.recentMessage ?? []).reverse()
             const msgHistory = JSON.parse(JSON.stringify(chatMessageHistory.value))
-            chatMessageHistory.value = removeDuplicateObj([...msgList, ...msgHistory])
+            chatMessageHistory.value = removeDuplicateObj([...msgList, ...msgHistory].filter(msg => msg.id))
+            store.setChatMessageHistory(props.chatInfo.id, chatMessageHistory.value, pageNumber)
             resolve(res);
         }).catch((err: AxiosError) => {
             reject(err);
@@ -373,195 +321,6 @@
                     chatMessageHistory.value = messageHistory.messageList
                     pageNumber.value = messageHistory.pageNumber
                 }
-                chatMessageHistory.value = [...chatMessageHistory.value, ...[
-                    {
-                        "id": "61c05939eb14ae4845723000",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723003",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723004",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723005",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723006",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723007",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723008",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723009",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723010",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723011",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                    {
-                        "id": "61c05939eb14ae4845723012",
-                        "roomId": "61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7",
-                        "senderId": "61be0e3ae7fd6865cbcd74c7",
-                        "senderName": "123456",
-                        "senderNickname": "保利尼奥3151",
-                        "senderAvatar": "https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg",
-                        "time": "2021-12-20T10:21:45.430+00:00",
-                        "fileRawName": null,
-                        "message": "323112",
-                        "messageType": "text",
-                        "isReadUser":
-                            [
-                                "61be0e3ae7fd6865cbcd74c7",
-                                "61be0e6ce7fd6865cbcd74ca"
-                            ]
-                    },
-                ]]
                 Promise.all([getSingleChatHistory(1)]).then(() => {
                     loadingStatus.value = false
                     if (chatMessageArea.value) {
@@ -577,6 +336,18 @@
                 immediate: true
             }
         )
+
+        store.$socket.on('receiveMessage', (msg: any) => {
+            if (msg.roomId === props.chatInfo.id) {
+                chatMessageHistory.value.push(msg)
+                chatMessageArea.value.scrollTop = 9999909
+                setTimeout(() => {
+                    if (chatMessageArea.value) {
+                        chatMessageArea.value.scrollTop = 9999909
+                    }
+                }, 300)
+            }
+        })
     })
 </script>
 

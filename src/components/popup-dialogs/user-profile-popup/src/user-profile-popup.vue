@@ -60,7 +60,7 @@
       </div>
       <div class="w-100 d-flex">
         <v-btn
-          v-if="userProfile.myFriend"
+          v-if="isFriend"
           class="bg-grey-lighten-4 text-grey-darken-2"
           width="84"
           :flat="true"
@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts" setup>
-    import {defineProps, withDefaults, defineEmits, ref, watch, onMounted} from 'vue'
+    import {defineProps, withDefaults, defineEmits, ref, watch, onMounted, computed} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {getUserProfileApi} from '@/service/api/user'
@@ -120,14 +120,22 @@
 
     const showDialog = ref(props.value) //是否显示弹窗
     const store = useStore()
-    const {primaryColor} = storeToRefs(store)
-    const userProfile = ref({}) //用户个人资料
+    const {primaryColor, getUserInfo} = storeToRefs(store)
+    const userProfile = ref<any>({}) //用户个人资料
     const validateMessagePopupProps = ref<ValidateMessagePopupProps>({
         value: false,
         type: 0,
         receiverId: '',
         groupId: ''
     }) //验证消息弹窗组件的属性
+
+    // 是否为我的好友
+    const isFriend = computed((): boolean => {
+        if (userProfile.value.friendFenZu) {
+            return userProfile.value.friendFenZu.bestFriend.includes(getUserInfo.value.uid)
+        }
+        else return false
+    })
 
     // 获取用户个人资料
     const getUserProfile = async () => {

@@ -175,6 +175,7 @@
         () => route.params,
         nVal => {
             if (nVal.roomId) {
+                console.log(getChatList.value)
                 const chatIndex = getChatList.value.findIndex((chat: { id: string }) => chat.id === nVal.roomId)
                 if (chatIndex !== -1) {
                     currentNavItemIndex.value = chatIndex

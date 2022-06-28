@@ -41,7 +41,7 @@
     import NavigationBar from '@/components/navigation-bar'
     import HomeFrame from '@/components/frames/home-frame'
     import GroupFrame from '@/components/frames/group-frame'
-    import TopChatFrame from '@/components/frames/top-chat-frame/src/top-chat-frame'
+    import TopChatFrame from '@/components/frames/top-chat-frame'
     import SettingFrame from '@/components/frames/setting-frame'
     import Loading from '@/components/loading'
     import SearchPopup from '@/components/popup-dialogs/search-popup'
@@ -78,24 +78,9 @@
     // 获取聊天列表
     const getChatListPromise = () => new Promise((resolve, reject) => {
         getChatListApi().then((res: AxiosResponse) => {
-            store.setChatList([
-                {
-                    id: '62bac823e8dfe11e4963b09b',
-                    photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
-                    nickname: '南野托斯3267',
-                    friendBeiZu: null,
-                    lastMessage: '4234',
-                    time: '2021-12-20T10:07:44.202+00:00'
-                },
-                {
-                    id: '61be0e6ce7fd6865cbcd74ca-61be0e3ae7fd6865cbcd74c7',
-                    photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
-                    nickname: '保利尼奥保利尼奥保利尼奥3151',
-                    friendBeiZu: 'Cowjiang的小号',
-                    lastMessage: '保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥保利尼奥',
-                    time: '2021-12-20T10:21:45.430+00:00'
-                }
-            ])
+            if (res.data.list) {
+                store.setChatList(res.data.list)
+            }
             resolve(res)
         }).catch((err: AxiosError) => {
             reject(err)

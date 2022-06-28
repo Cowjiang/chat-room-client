@@ -121,7 +121,7 @@
 </template>
 
 <script lang="ts" setup>
-    import {ref, watch, withDefaults, defineProps} from 'vue'
+    import {ref, watch, withDefaults, defineProps, defineEmits, nextTick} from 'vue'
     import {useStore} from '@/store'
     import {storeToRefs} from 'pinia'
     import {useRouter} from 'vue-router'
@@ -132,6 +132,7 @@
     import {getFriendsListApi} from '@/service/api/firends'
     import {FriendInfo} from '@/store/types'
     import ValidateList from '@/components/frames/friend-frame/src/src/validate-list.vue'
+    import {sendSocketMessage} from "@/service/socket";
 
     interface Props {
         friendType: FriendType //好友类型
@@ -147,7 +148,7 @@
         friendType: 0
     })
     const store = useStore()
-    const {primaryColor, getChatList} = storeToRefs(store)
+    const {primaryColor, getChatList, getUserInfo} = storeToRefs(store)
     const router = useRouter()
     const friendTypeList = ['全部好友', '在线', '请求', '已屏蔽'] //好友列表类型标题
     const currentFriendType = ref<FriendType>(props.friendType) //当前的好友类型
@@ -166,27 +167,23 @@
         if (friendType === 0 || friendType === 1) {
             getFriendsListApi().then((res: AxiosResponse) => {
                 if (friendType === 0) {
-                    res.data.myFriendsList = [
-                        {
-                            createDate: '2021-12-18T16:41:26.640+00:00',
-                            nickname: '阿尔维斯3132',
-                            photo: 'face/face5.jpg',
-                            signature: '',
-                            id: '61be1225764ede0e9b7c9a30',
-                            level: 1,
-                            roomId: '61be0e6ce7fd6865cbcd74ca-61be1225764ede0e9b7c9a30'
-                        },
-                        {
-                            createDate: '2021-12-18T16:41:26.640+00:00',
-                            nickname: '阿尔维斯3133',
-                            photo: 'https://chat-ice.oss-cn-beijing.aliyuncs.com/chat/9138f18c-1723-4d97-b027-c92c113bd707.jpg',
-                            signature: '',
-                            id: '61be1225764ede0e9b7c9a31',
-                            level: 1,
-                            roomId: '61be0e6ce7fd6865cbcd74ca-61be1225764ede0e9b7c9a32'
-                        }
-                    ]
                     store.setFriendList(res.data.myFriendsList ?? [])
+                    res.data.myFriendsList.map((friend: any) => {
+                        const join = {
+                            id: friend.roomId.replace(getUserInfo.value.uid, ''), //roomId去掉我的Id，就是friendId
+                            conversationType: 'FRIEND',
+                            createDate: new Date(),
+                            isGroup: false,
+                            roomId: friend.roomId,
+                            myId: getUserInfo.value.uid,
+                            myAvatar: getUserInfo.value.photo,
+                            myNickname: getUserInfo.value.nickname,
+                            nickname: friend.nickname,
+                            photo: friend.photo,
+                            username: friend.username,
+                        }
+                        sendSocketMessage('join', join)
+                    })
                 } else if (friendType === 1) {
                     res.data.myFriendsList = [
                         {
@@ -206,11 +203,9 @@
             }).catch((err: AxiosError) => {
                 reject(err)
             })
-        }
-        else if (friendType === 2) {
+        } else if (friendType === 2) {
             resolve(true)
-        }
-        else {
+        } else {
             store.setFriendList([])
             currentFriendList.value = []
             currentFriendAmount.value = 0
@@ -223,13 +218,6 @@
      * @param friend 好友信息
      */
     const handleFriendClick = (friend: FriendInfo) => {
-        router.replace({
-            name: 'chat',
-            params: {
-                chatType: 'private',
-                roomId: friend.roomId
-            }
-        })
         if (getChatList.value.findIndex((chat: { id: string }) => chat.id === friend.roomId) === -1) {
             store.setChatList([{
                 id: friend.roomId,
@@ -238,6 +226,13 @@
                 time: Date()
             }, ...store.chatList])
         }
+        router.replace({
+            name: 'chat',
+            params: {
+                chatType: 'private',
+                roomId: friend.roomId
+            }
+        })
     }
 
     /**
@@ -249,8 +244,7 @@
         if (e[0] === 0) {
             userProfilePopupProps.value.uid = friend.id
             userProfilePopupProps.value.value = true
-        }
-        else if (e[0] === 1) {
+        } else if (e[0] === 1) {
             handleFriendClick(friend)
         }
     }
